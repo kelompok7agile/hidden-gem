@@ -73,7 +73,7 @@ const login = async (email, password) => {
     }
     //generate token jwt
     const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, {
-      expiresIn: "60s",
+      expiresIn: "1h",
     });
     // const existingToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImlhdCI6MTc0MjMwNjk5NCwiZXhwIjoxNzQyMzA3MDA0fQ.XHlOhxkVr4c-NuF7MBSRoYnICwZUQZnCsYDZEsuuyPk";
     // const decoded = jwt.verify(existingToken, process.env.JWT_SECRET);
