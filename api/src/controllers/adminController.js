@@ -7,7 +7,7 @@ const getAdminDashboard = async (req, res) => {
       });
     } catch (error) {
       console.error("Error di adminController:", error.message);
-      res.status(500).json({ message: "Terjadi kesalahan di server" });
+      res.status(500).json(formatMessage("", null, 500));
     }
   };
   
@@ -17,7 +17,7 @@ const getAdminDashboard = async (req, res) => {
       res.status(200).json({ message: "Mengelola user berhasil" });
     } catch (error) {
       console.error("Error di adminController:", error.message);
-      res.status(500).json({ message: "Terjadi kesalahan di server" });
+      res.status(500).json(formatMessage("", null, 500));
     }
   };
   
