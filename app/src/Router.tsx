@@ -6,8 +6,6 @@ import NoMatch from "./pages/NoMatch";
 import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
-import EmailPage from "./pages/Email/EmailPage";
-import EmailDetailPage from "./pages/Email/EmailDetailPage";
 
 export const router = createBrowserRouter([
     {
