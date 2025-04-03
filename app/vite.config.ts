@@ -15,11 +15,19 @@ export default defineConfig(({ command }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    optimizeDeps: {
+      include: ["react", "react-dom"],
+    },
     define: {
       // global: {
       //   basename: isProd ? basenameProd : "",
       // },
       global: "globalThis",
+    },
+    build: {
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
   };
 });
