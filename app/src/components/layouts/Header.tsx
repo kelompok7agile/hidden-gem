@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "@/components/icons";
 import { appConfig } from "@/config/app";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Icon } from "@iconify/react";
+import { Input } from "@/components/ui/input";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,68 +23,55 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Logo } from "../logo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ModeToggle } from "../mode-toggle";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import MultiSelect from "../ui/multi-select";
 
+
+interface Fasilitas {
+    value: string;
+    text: string;
+    icon: string;
+}
 export function Header() {
     const [open, setOpen] = useState(false)
     const location = useLocation();
 
+    const [selectedValues, setSelectedValues] = useState<string[]>([]);
+    const [options, setOptions] = useState<Fasilitas[]>([])
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+    const fetchOptions = async () => {
+        try {
+            const response = await fetch('/dummy/fasilitas.json');
+            const data = await response.json();
+            setOptions(data);
+        }
+        catch (error) {
+            console.error("Error fetching options:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchOptions();
+    }, []);
+
+
+
     return (
         <header className="supports-backdrop-blur:bg-background/60 sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur">
-            <div className="container px-4 md:px-8 flex h-14 items-center">
-                <div className="mr-4 hidden md:flex">
+            <div className="container px-4 md:px-8 flex h-24 items-center ">
+                <div className="mr-4 hidden md:flex items-center justify-between space-x-2 ">
+                    {/* desktop */}
                     <NavLink to="/" className="mr-6 flex items-center space-x-2">
                         <Logo />
                     </NavLink>
                     <nav className="flex items-center space-x-6 text-sm font-medium">
-                        {mainMenu.map((menu, index) =>
-                            menu.items !== undefined ? (
-                                <DropdownMenu key={index}>
-                                    <DropdownMenuTrigger className={cn(
-                                        "flex items-center py-1 focus:outline-none text-sm font-medium transition-colors hover:text-primary",
-                                        (menu.items.filter(subitem => subitem.to !== undefined).map(subitem => subitem.to))
-                                            .includes(location.pathname) ? 'text-foreground' : 'text-foreground/60',
-                                    )}>
-                                        {menu.title}
-                                        <ChevronDownIcon className="ml-1 -mr-1 h-3 w-3 text-muted-foreground" />
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className='w-48' align="start" forceMount>
-                                        {menu.items.map((subitem, subindex) =>
-                                            subitem.to !== undefined ? (
-                                                <NavLink key={subindex} to={subitem.to}>
-                                                    <DropdownMenuItem className={cn(
-                                                        "hover:cursor-pointer",
-                                                        { 'bg-muted': subitem.to === location.pathname }
-                                                    )}>
-                                                        {subitem.title}
-                                                    </DropdownMenuItem>
-                                                </NavLink>
-                                            ) : (
-                                                subitem.label ? (
-                                                    <DropdownMenuLabel key={subindex}>{subitem.title}</DropdownMenuLabel>
-                                                ) : (
-                                                    <DropdownMenuSeparator key={subindex} />
-                                                )
-                                            )
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            ) : (
-                                <NavLink
-                                    key={index}
-                                    to={menu.to ?? ""}
-                                    className={({ isActive }) => cn(
-                                        "text-sm font-medium transition-colors hover:text-primary",
-                                        isActive ? "text-foreground" : "text-foreground/60"
-                                    )}>
-                                    {menu.title}
-                                </NavLink>
-                            )
-                        )}
+
                     </nav>
 
                 </div>
                 {/* mobile */}
-                <Sheet open={open} onOpenChange={setOpen}>
+                {/* <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
                         <Button
                             variant="ghost"
@@ -130,7 +120,7 @@ export function Header() {
                                                                     null
                                                                 ) : (
                                                                     <div className="px-3">
-                                                                        {/* <Separator /> */}
+                                                                        <span className="text-sm font-medium text-foreground/60">{submenu.title}</span>
                                                                     </div>
                                                                 )
                                                             )
@@ -155,19 +145,58 @@ export function Header() {
                             </Accordion>
                         </ScrollArea>
                     </SheetContent>
-                </Sheet>
+                </Sheet> */}
+
                 <a href="/" className="mr-6 flex items-center space-x-2 md:hidden">
                     <Icons.logo className="h-6 w-6" />
                     <span className="font-bold inline-block">{appConfig.name}</span>
                 </a>
                 {/* right */}
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-                    <div className="w-full flex-1 md:w-auto md:flex-none">
-                        {/* <CommandMenu /> */}
+                    <div className="w-64 flex items-center gap-2">
+                        <Input
+                            type="text"
+                            placeholder="Cari Nama Tempat..."
+                            className="rounded-full h-10"
+                            trailing={
+                                <Button variant="destructive" className="bg-primary rounded-full w-[32px] h-[32px] hover:bg-primary" size="icon">
+                                    <Icon icon="mdi:magnify" width="20" />
+                                </Button>
+                            }
+                        />
+                    </div>
+                    <div>
+                        <Popover>
+                            <PopoverTrigger>  <Button variant="destructive" className="bg-primary rounded-full w-[30px] h-[30px] hover:bg-primary" size="icon">
+                                <Icon icon="mdi:filter" width="20" />
+                            </Button></PopoverTrigger>
+                            <PopoverContent align="end" className='w-80'>
+                                <div>
+                                    <p className="
+                                    text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2
+                                    ">Fasilitas</p>
+                                    <MultiSelect
+                                        options={options}
+                                        selectedValues={selectedValues}
+                                        onChange={setSelectedValues}
+                                        placeholder="Pilih Fasilitas"
+                                    />
+                                    <div className="flex justify-between mt-2 gap-2">
+                                        <Button variant="destructive" className="bg-white ring-1 ring-primary rounded-full w-full h-[30px] hover:bg-white mt-2 text-primary" size="icon">
+                                            Reset
+                                        </Button>
+                                        <Button variant="destructive" className="bg-primary rounded-full w-full h-[30px] hover:bg-primary mt-2" size="icon">
+                                            Cari
+                                        </Button>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                     <nav className="flex items-center space-x-2">
                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                            <DropdownMenuTrigger className="flex gap-4 px-4 py-4 h-10 ring-1 ring-[#ddd] items-center justify-center rounded-full">
+                                <Icon icon="ci:hamburger-md" width="20" className="cursor-pointer" />
                                 <Button
                                     variant='ghost'
                                     className='relative h-8 w-8 rounded-full'>
@@ -189,9 +218,10 @@ export function Header() {
                                 <DropdownMenuItem>Log out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                       <ModeToggle />
+                        <ModeToggle />
                     </nav>
                 </div>
+
             </div>
         </header>
     )

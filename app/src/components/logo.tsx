@@ -1,11 +1,19 @@
 import { appConfig } from "@/config/app";
-import { Icons } from "./icons";
+import logo from "../assets/image/logo/logo.png";
+
 
 export function Logo() {
     return (
         <>
-            <Icons.logo className="h-6 w-6" />
-            <span className="font-bold">{appConfig.name}</span>
+            <img
+            width={70}
+            height={70}
+            src={logo}
+            alt={appConfig.name}
+            className="w-16 h-2w-16 rounded-full object-contain"
+            placeholder="blur"
+            ></img>
+            <span className="font-bold text-primary text-xl">{appConfig.name}</span>
         </>
     )
 }

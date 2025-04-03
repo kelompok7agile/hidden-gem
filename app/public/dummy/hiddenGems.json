@@ -1,0 +1,350 @@
+[
+  {
+    "id": 1,
+    "nama_tempat": "Vintage Coffee Haven",
+    "deskripsi_tempat": "Tempat ngopi dengan desain klasik dan suasana hangat.",
+    "kategori": "vintage",
+    "rating_tempat": 4.7,
+    "lokasi": "Jl. Veteran No.10, Bandung",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "08:00 - 22:00",
+    "fasilitas": ["WiFi", "Smoking Area", "Live Music"],
+    "rating_review": 4.6,
+    "thumbnail": "https://picsum.photos/seed/vintage/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/vintage1/200/300",
+      "https://picsum.photos/seed/vintage2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Dian",
+        "rating": 5,
+        "comment": "Tempatnya cozy dan kopinya enak!"
+      },
+      {
+        "user": "Rizky",
+        "rating": 4.5,
+        "comment": "Suasana klasik yang nyaman untuk kerja."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nama_tempat": "Green Escape Park",
+    "deskripsi_tempat": "Taman alami yang tenang dengan banyak pohon rindang.",
+    "kategori": "nature",
+    "rating_tempat": 4.8,
+    "lokasi": "Jl. Merdeka No.25, Bogor",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "06:00 - 18:00",
+    "fasilitas": ["Toilet Umum", "Jogging Track", "Spot Foto"],
+    "rating_review": 4.7,
+    "thumbnail": "https://picsum.photos/seed/nature/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/nature1/200/300",
+      "https://picsum.photos/seed/nature2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Anita",
+        "rating": 5,
+        "comment": "Udara segar dan pemandangan indah!"
+      },
+      {
+        "user": "Budi",
+        "rating": 4.5,
+        "comment": "Tempat yang cocok buat healing."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "nama_tempat": "Minimalist Workspace Hub",
+    "deskripsi_tempat": "Co-working space dengan desain minimalis dan nyaman.",
+    "kategori": "minimalist",
+    "rating_tempat": 4.5,
+    "lokasi": "Jl. Sudirman No.15, Jakarta",
+    "jadwal_open": "Senin - Jumat",
+    "waktu_open": "08:00 - 20:00",
+    "fasilitas": ["WiFi", "Meeting Room", "Café Area"],
+    "rating_review": 4.4,
+    "thumbnail": "https://picsum.photos/seed/minimalist/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/minimalist1/200/300",
+      "https://picsum.photos/seed/minimalist2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Siti",
+        "rating": 4.5,
+        "comment": "Desainnya clean dan nyaman untuk kerja."
+      },
+      {
+        "user": "Andi",
+        "rating": 4,
+        "comment": "Tempatnya bagus tapi agak ramai."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "nama_tempat": "Industrial Loft Café",
+    "deskripsi_tempat": "Kafe dengan desain industrial dan suasana urban modern.",
+    "kategori": "industrial",
+    "rating_tempat": 4.6,
+    "lokasi": "Jl. Kuningan No.30, Jakarta",
+    "jadwal_open": "Senin - Sabtu",
+    "waktu_open": "10:00 - 23:00",
+    "fasilitas": ["WiFi", "Bar", "Outdoor Seating"],
+    "rating_review": 4.5,
+    "thumbnail": "https://picsum.photos/seed/industrial/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/industrial1/200/300",
+      "https://picsum.photos/seed/industrial2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Eka",
+        "rating": 4.8,
+        "comment": "Suasana keren dan cocok untuk nongkrong."
+      },
+      {
+        "user": "Rina",
+        "rating": 4.5,
+        "comment": "Musiknya asik, vibesnya enak."
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "nama_tempat": "Cozy Hidden Garden",
+    "deskripsi_tempat": "Taman kecil dengan suasana homey dan nyaman.",
+    "kategori": "cozy",
+    "rating_tempat": 4.9,
+    "lokasi": "Jl. Mawar No.5, Yogyakarta",
+    "jadwal_open": "Setiap Hari",
+    "waktu_open": "07:00 - 21:00",
+    "fasilitas": ["Tempat Duduk Nyaman", "Taman Hijau", "WiFi Gratis"],
+    "rating_review": 4.8,
+    "thumbnail": "https://picsum.photos/seed/cozy/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/cozy1/200/300",
+      "https://picsum.photos/seed/cozy2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Lia",
+        "rating": 5,
+        "comment": "Tempat yang sempurna untuk bersantai."
+      },
+      {
+        "user": "Dodi",
+        "rating": 4.8,
+        "comment": "Taman kecil tapi nyaman banget."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "nama_tempat": "Serene Forest Retreat",
+    "deskripsi_tempat": "Penginapan di tengah hutan dengan pemandangan alami yang memukau.",
+    "kategori": "nature",
+    "rating_tempat": 4.9,
+    "lokasi": "Jl. Raya Puncak No.12, Bogor",
+    "jadwal_open": "Setiap Hari",
+    "waktu_open": "24 Jam",
+    "fasilitas": ["WiFi", "Hot Spring", "Hiking Trail"],
+    "rating_review": 4.8,
+    "thumbnail": "https://picsum.photos/seed/forest/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/forest1/200/300",
+      "https://picsum.photos/seed/forest2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Lia",
+        "rating": 5,
+        "comment": "Pengalaman menginap yang luar biasa!"
+      },
+      {
+        "user": "Dani",
+        "rating": 4.9,
+        "comment": "Tempat yang sempurna untuk melarikan diri dari kota."
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "nama_tempat": "Skyline Rooftop Lounge",
+    "deskripsi_tempat": "Bar rooftop dengan pemandangan cityscape yang memukau.",
+    "kategori": "industrial",
+    "rating_tempat": 4.7,
+    "lokasi": "Jl. Thamrin No.45, Jakarta",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "18:00 - 02:00",
+    "fasilitas": ["Live DJ", "Cocktail Bar", "VIP Lounge"],
+    "rating_review": 4.6,
+    "thumbnail": "https://picsum.photos/seed/rooftop/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/rooftop1/200/300",
+      "https://picsum.photos/seed/rooftop2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Rizal",
+        "rating": 4.8,
+        "comment": "Vibes malamnya keren banget!"
+      },
+      {
+        "user": "Santi",
+        "rating": 4.6,
+        "comment": "Tempat yang asik buat chill bareng teman-teman."
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "nama_tempat": "Hidden Valley Retreat",
+    "deskripsi_tempat": "Tempat penginapan terpencil di lembah dengan suasana damai.",
+    "kategori": "cozy",
+    "rating_tempat": 4.9,
+    "lokasi": "Jl. Bukit Hijau No.10, Bali",
+    "jadwal_open": "Setiap Hari",
+    "waktu_open": "24 Jam",
+    "fasilitas": ["Private Villa", "Infinity Pool", "Yoga Studio"],
+    "rating_review": 4.9,
+    "thumbnail": "https://picsum.photos/seed/valley/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/valley1/200/300",
+      "https://picsum.photos/seed/valley2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Cindy",
+        "rating": 5,
+        "comment": "Tempat terbaik untuk relaksasi total."
+      },
+      {
+        "user": "Bobby",
+        "rating": 4.8,
+        "comment": "Pemandangan dan fasilitasnya luar biasa."
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "nama_tempat": "Artisan Bakery & Café",
+    "deskripsi_tempat": "Kafe dengan roti artisan dan suasana yang hangat.",
+    "kategori": "minimalist",
+    "rating_tempat": 4.6,
+    "lokasi": "Jl. Kebon Jeruk No.20, Jakarta",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "07:00 - 20:00",
+    "fasilitas": ["WiFi", "Outdoor Seating", "Bakery"],
+    "rating_review": 4.5,
+    "thumbnail": "https://picsum.photos/seed/bakery/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/bakery1/200/300",
+      "https://picsum.photos/seed/bakery2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Tina",
+        "rating": 4.7,
+        "comment": "Roti dan kue-kue di sini enak banget!"
+      },
+      {
+        "user": "Eko",
+        "rating": 4.5,
+        "comment": "Suasana kafenya nyaman untuk kerja."
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "nama_tempat": "Cozy Book Nook",
+    "deskripsi_tempat": "Kafe dengan koleksi buku yang banyak dan suasana tenang.",
+    "kategori": "cozy",
+    "rating_tempat": 4.8,
+    "lokasi": "Jl. Cikini No.5, Jakarta",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "09:00 - 21:00",
+    "fasilitas": ["WiFi", "Buku", "Tempat Duduk Nyaman"],
+    "rating_review": 4.7,
+    "thumbnail": "https://picsum.photos/seed/book/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/book1/200/300",
+      "https://picsum.photos/seed/book2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Rina",
+        "rating": 5,
+        "comment": "Tempat yang sempurna untuk membaca."
+      },
+      {
+        "user": "Fajar",
+        "rating": 4.9,
+        "comment": "Koleksi bukunya lengkap dan nyaman."
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "nama_tempat": "Art Gallery & Café",
+    "deskripsi_tempat": "Kafe dengan galeri seni dan suasana artistik.",
+    "kategori": "minimalist",
+    "rating_tempat": 4.7,
+    "lokasi": "Jl. Senopati No.10, Jakarta",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "10:00 - 22:00",
+    "fasilitas": ["WiFi", "Galeri Seni", "Outdoor Seating"],
+    "rating_review": 4.6,
+    "thumbnail": "https://picsum.photos/seed/gallery/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/gallery1/200/300",
+      "https://picsum.photos/seed/gallery2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Dina",
+        "rating": 4.8,
+        "comment": "Suasana seni yang unik dan nyaman."
+      },
+      {
+        "user": "Rudi",
+        "rating": 4.7,
+        "comment": "Makanan dan minumannya enak."
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "nama_tempat": "The Urban Jungle",
+    "deskripsi_tempat": "Kafe dengan konsep taman dalam ruangan yang segar.",
+    "kategori": "nature",
+    "rating_tempat": 4.9,
+    "lokasi": "Jl. Sudirman No.15, Jakarta",
+    "jadwal_open": "Senin - Minggu",
+    "waktu_open": "08:00 - 22:00",
+    "fasilitas": ["WiFi", "Indoor Garden", "Live Music"],
+    "rating_review": 4.8,
+    "thumbnail": "https://picsum.photos/seed/jungle/200/300",
+    "thumbnail_gallery": [
+      "https://picsum.photos/seed/jungle1/200/300",
+      "https://picsum.photos/seed/jungle2/200/300"
+    ],
+    "reviews": [
+      {
+        "user": "Sari",
+        "rating": 5,
+        "comment": "Suasana hijau yang menenangkan."
+      },
+      {
+        "user": "Toni",
+        "rating": 4.9,
+        "comment": "Makanan enak dan tempatnya nyaman."
+      }
+    ]
+  }
+]

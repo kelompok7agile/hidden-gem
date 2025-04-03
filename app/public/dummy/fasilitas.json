@@ -1,0 +1,9 @@
+[
+  { "value": "wifi", "text": "WiFi" },
+  { "value": "toilet", "text": "Toilet" },
+  { "value": "parkir", "text": "Parkir" },
+  { "value": "mushola", "text": "Mushola" },
+  { "value": "ruang-rapat", "text": "Ruang Rapat" },
+  { "value": "ruang-keluarga", "text": "Ruang Keluarga" },
+  { "value": "kolam-renang", "text": "Kolam Renang" }
+]

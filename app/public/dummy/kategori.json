@@ -1,0 +1,16 @@
+[
+  { "text": "Semua", "icon": "material-symbols:select-all", "value": "semua" },
+  { "text": "Vintage", "icon": "hugeicons:vintage-clock", "value": "vintage" },
+  {
+    "text": "Nature",
+    "icon": "material-symbols:nature-outline",
+    "value": "nature"
+  },
+  {
+    "text": "Minimalist",
+    "icon": "solar:box-minimalistic-broken",
+    "value": "minimalist"
+  },
+  { "text": "Industrial", "icon": "mdi:industrial", "value": "industrial" },
+  { "text": "Cozy", "icon": "solar:home-outline", "value": "cozy" }
+]

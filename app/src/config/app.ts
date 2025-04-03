@@ -11,13 +11,13 @@ interface AppConfig {
 }
 
 export const appConfig: AppConfig = {
-    name: "Sample App",
+    name: "Hidden Gem",
     github: {
-        title: "React Shadcn Starter",
-        url: "https://github.com/hidayatfajar/react-shadcn-starter",
+        title: "GitHub Repository",
+        url: "https://github.com/kelompok7agile/hidden-gem",
     },
     author: {
-        name: "Fajar Hidayat",
-        url: "https://github.com/hidayatfajar",
-    }
+        name: "Kelompok 7",
+        url: "https://github.com/kelompok7agile",
+    },
 }
