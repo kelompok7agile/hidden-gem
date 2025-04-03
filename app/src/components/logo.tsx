@@ -11,7 +11,6 @@ export function Logo() {
             src={logo}
             alt={appConfig.name}
             className="w-16 h-2w-16 rounded-full object-contain"
-            placeholder="blur"
             ></img>
             <span className="font-bold text-primary text-xl">{appConfig.name}</span>
         </>
