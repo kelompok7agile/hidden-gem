@@ -20,7 +20,6 @@ export default defineConfig(({ command }) => {
       //   basename: isProd ? basenameProd : "",
       // },
       global: "globalThis",
-      plugins: [commonjs()],
     },
   };
 });
