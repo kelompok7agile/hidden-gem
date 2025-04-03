@@ -25,6 +25,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ModeToggle } from "../mode-toggle";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import MultiSelect from "../ui/multi-select";
+import axios from "axios";
 
 
 interface Fasilitas {
@@ -42,8 +43,8 @@ export function Header() {
 
     const fetchOptions = async () => {
         try {
-            const response = await fetch('/dummy/fasilitas.json');
-            const data = await response.json();
+            const response = await axios.get('/dummy/fasilitas.json');
+            const data = response.data;
             setOptions(data);
         }
         catch (error) {
