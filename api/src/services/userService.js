@@ -71,19 +71,10 @@ const login = async (email, password) => {
     } else {
         throw new Error("Role tidak valid");
     }
-    //generate token jwt
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ user_id: user.user_id, user_group_id: user.user_group_id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    // const existingToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImlhdCI6MTc0MjMwNjk5NCwiZXhwIjoxNzQyMzA3MDA0fQ.XHlOhxkVr4c-NuF7MBSRoYnICwZUQZnCsYDZEsuuyPk";
-    // const decoded = jwt.verify(existingToken, process.env.JWT_SECRET);
 
-    // if(decoded){
-    //   console.log("decoded: ", decoded);
-    // }else {
-    //   console.log("Expired token");
-    // }
-    // Hapus data sensitif sebelum mengembalikan respons
     const { password: userPassword, salt_password, ...userWithoutSensitiveData } = user;
 
     return {
@@ -97,8 +88,39 @@ const login = async (email, password) => {
   }
 };
 
+const updateProfile = async (user_id, userData, file) => {
+  const { nama, email, no_telepon, password } = userData;
+
+  try {
+    let hashedPassword, salt;
+    if (password && password.length >= 8) {
+      const result = await hashPassword(password);
+      hashedPassword = result.hashedPassword;
+      salt = result.salt;
+    }
+
+    const updateData = {
+      nama,
+      email,
+      no_telepon,
+      ...(hashedPassword && { password: hashedPassword, salt_password: salt }),
+    };
+
+    if (file) {
+      updateData.profile_img = file.filename;
+    }
+
+    const updatedUser = await userRepository.updateUser(user_id, updateData);
+
+    return updatedUser;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   register,
   login,
   getAllUsers,
+  updateProfile,
 };
