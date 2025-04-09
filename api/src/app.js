@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes.js");
 const adminRoutes = require("./routes/adminRoutes");
 const tempatRoutes = require("./routes/tempatRoutes.js");
 const resetRoutes = require("./routes/resetRoutes.js");
+const reviewRoutes = require("./routes/reviewRoutes.js");
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use("/user" , userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/tempat", tempatRoutes);
 app.use("/reset", resetRoutes);
+app.use("/review", reviewRoutes);
 
 module.exports = app;

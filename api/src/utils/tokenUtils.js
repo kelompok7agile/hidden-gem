@@ -1,4 +1,4 @@
-const hwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const generateResetToken = (email) => {
     const secret = process.env.JWT_SECRET;
