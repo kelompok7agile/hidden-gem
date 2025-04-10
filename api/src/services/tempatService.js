@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const getAllTempat = async (filters) => {
-  const { nama, kategori } = filters;
+  const { nama, kategori, fasilitas } = filters;
 
   let kategoriArray = [];
   if (kategori) {
@@ -17,9 +17,22 @@ const getAllTempat = async (filters) => {
     }
   }
 
+  let fasilitasArray = [];
+  if (fasilitas) {
+    try {
+      fasilitasArray = JSON.parse(fasilitas);
+      if (!Array.isArray(fasilitasArray)) {
+        throw new Error("Fasilitas harus berupa array");
+      }
+    } catch (e) {
+      throw new Error("Format fasilitas tidak valid (harus JSON array)");
+    }
+  }
+
   const tempat = await tempatRepository.getAllTempat({
     nama,
     kategori: kategoriArray,
+    fasilitas: fasilitasArray,
   });
 
   if (!tempat || tempat.length === 0) {
@@ -28,6 +41,7 @@ const getAllTempat = async (filters) => {
 
   return tempat;
 };
+
 
 
 const getTempatById = async (id) => {

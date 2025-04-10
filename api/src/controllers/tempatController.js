@@ -3,11 +3,12 @@ const { formatMessage, formatPaginatedMessage } = require("../utils/formatter");
 
 const getAllTempat = async (req, res) => {
   try {
-    const { nama, kategori } = req.query;
+    const { nama, kategori, fasilitas } = req.query;
 
     const tempat = await tempatService.getAllTempat({
       nama,
       kategori,
+      fasilitas
     });
 
     res.status(200).json(formatMessage("Data tempat berhasil diambil", tempat));
