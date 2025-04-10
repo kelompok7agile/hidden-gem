@@ -2,23 +2,24 @@ const jwt = require("jsonwebtoken");
 
 const authenticateUser = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    const token = req.headers.hgtoken;
+
+    if (!token) {
       return res.status(401).json({ message: "Unauthorized: Token tidak ditemukan" });
     }
 
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Simpan data user dari token ke dalam request
     req.user = decoded;
 
-    next(); // Lanjutkan ke endpoint berikutnya
+    next();
   } catch (error) {
     console.error("Error di middleware authenticateUser:", error.message);
     return res.status(401).json({ message: "Unauthorized: Token tidak valid" });
   }
 };
+
+
 
 const checkRole = (requiredRole) => {
   return (req, res, next) => {
