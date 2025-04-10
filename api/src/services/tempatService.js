@@ -147,7 +147,7 @@ const updateTempat = async (tempat_id, body, files, user_id) => {
   for (const foto of fotoLama) {
     await tempatRepository.deleteFotoTempat(foto.foto_tempat_id);
 
-    const filePath = path.join(__dirname, "../../uploads/foto_tempat", foto.foto);
+    const filePath = path.join(__dirname, "../../uploads/dokumen", foto.foto);
     fs.unlink(filePath, (err) => {
       if (err) console.error("Gagal hapus file:", foto.foto);
     });

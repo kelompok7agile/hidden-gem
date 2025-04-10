@@ -61,7 +61,7 @@ const updateProfile = async (req, res) => {
     if (req.file) {
       const filePath = path.join(
         __dirname,
-        "../../uploads/profile_pictures",
+        "../../uploads/dokumen",
         req.file.filename
       );
       fs.unlinkSync(filePath, (err) => {

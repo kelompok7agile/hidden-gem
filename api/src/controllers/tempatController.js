@@ -74,7 +74,7 @@ const createTempat = async (req, res) => {
     console.error("Error saat menambahkan tempat:", error.message);
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const filePath = path.join(__dirname, "../../uploads/foto_tempat", file.filename);
+        const filePath = path.join(__dirname, "../../uploads/dokumen", file.filename);
         fs.unlink(filePath, (err) => {
           if (err) console.error("Gagal hapus file:", file.filename, err.message);
         });
@@ -102,7 +102,7 @@ const updateTempat = async (req, res) => {
   } catch (error) {
     if (req.files) {
       for (const file of req.files) {
-        const filePath = path.join(__dirname, "../../uploads/foto_tempat", file.filename);
+        const filePath = path.join(__dirname, "../../uploads/dokumen", file.filename);
         fs.unlink(filePath, (err) => {
           if (err) console.error("Gagal hapus file:", file.filename);
         });
