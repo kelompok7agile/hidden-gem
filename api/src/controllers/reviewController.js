@@ -5,19 +5,13 @@ const addReview = async (req, res) => {
     const { tempat_id, user_id, rating, review } = req.body;
 
     try {
-        if(!tempat_id || !user_id || !rating || !review) {
-            return res.status(400).json(formatMessage("Semua field harus diisi"));
-        }
-        if(rating < 1 || rating > 5) {
-            return res.status(400).json(formatMessage("Rating harus antara 1 dan 5"));
-        }
         const newReview = await reviewService.addReview(tempat_id, user_id, rating, review);
         res.status(201).json(formatMessage("Review berhasil ditambahkan", newReview));
     } catch (error) {
         console.error("Kesalahan saat menambahkan review:", error.message);
-        return res.status(500).json(formatMessage("Terjadi kesalahan di server"));
+        return res.status(500).json(formatMessage(error.message));
     }
-}
+};
 
 const getReviewsByTempatId = async (req, res) => {
     const { tempat_id } = req.params;
