@@ -1,18 +1,25 @@
 import { appConfig } from "@/config/app";
 import logo from "../assets/image/logo/logo.png";
 
+interface LogoProps {
+    width?: number;
+    height?: number;
+    withText?: boolean;
+}
 
-export function Logo() {
+export function Logo({ width = 70, height = 70, withText = true }: LogoProps) {
     return (
         <>
             <img
-            width={70}
-            height={70}
-            src={logo}
-            alt={appConfig.name}
-            className="w-16 h-2w-16 rounded-full object-contain"
+                width={width}
+                height={height}
+                src={logo}
+                alt={appConfig.name}
+                className="rounded-full object-contain"
             ></img>
-            <span className="font-bold text-primary text-xl">{appConfig.name}</span>
+            {withText && (
+                <span className="font-bold text-primary text-xl">{appConfig.name}</span>
+            )}
         </>
-    )
+    );
 }
