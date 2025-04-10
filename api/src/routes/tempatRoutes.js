@@ -8,7 +8,7 @@ const {
 const upload = require("../middlewares/upload_tempat");
 const validateTempat = require('../middlewares/validateTempat');
 
-router.get("/", authenticateUser, tempatController.getAllTempat);
+router.get("/", tempatController.getAllTempat);
 router.get("/compare", authenticateUser, tempatController.compareTempat);
 router.patch(
   "/:id",
