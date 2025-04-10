@@ -9,33 +9,37 @@ import Sample from "./pages/Sample";
 import LandingPage from "./pages/public/LandingPage";
 
 export const router = createBrowserRouter([
-    {
-      path: "/landing-page",
-      index: true,
-      element: <LandingPage />,
-    },
-    {
-        path: "/",
-        element: <Applayout />,
-        children: [
-            {
-                path: "/",
-                element: <Dashboard />,
-            },
-            {
-                path: "sample",
-                element: <Sample />,
-            },
-            {
-                path: "empty",
-                element: <Empty />,
-            },
-        ],
-    },
-    {
-        path: "*",
-        element: <NoMatch />,
-    },
+  {
+    path: "/",
+    index: true,
+    element: <LandingPage />, // Set LandingPage as the default route
+  },
+  {
+    path: "/app",
+    element: <Applayout />,
+    children: [
+      {
+        path: "/app",
+        element: <Dashboard />,
+      },
+      {
+        path: "sample",
+        element: <Sample />,
+      },
+      {
+        path: "empty",
+        element: <Empty />,
+      },
+    ],
+  },
+  // {
+  //   path: "/admin",
+  //   element: <Applayout />,
+  // },
+  {
+    path: "*",
+    element: <NoMatch />,
+  },
 ], {
-    // basename: global.basename || "/",
-})
+  // basename: global.basename || "/",
+});
