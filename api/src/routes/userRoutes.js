@@ -9,7 +9,6 @@ const {
 
 const router = express.Router();
 
-// Route untuk register user baru
 router.post(
   "/register",
   registerValidation,
@@ -17,10 +16,8 @@ router.post(
   userController.register
 );
 
-// Route untuk login user
 router.post("/login", userController.login);
 
-// Route untuk ubah profile
 const upload = require("../middlewares/upload");
 
 router.patch(

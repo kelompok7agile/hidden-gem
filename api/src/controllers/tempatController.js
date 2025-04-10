@@ -1,5 +1,6 @@
 const tempatService = require("../services/tempatService");
 const { formatMessage, formatPaginatedMessage } = require("../utils/formatter");
+const { isNSFWImage } = require('../validations/nsfwCheck');
 
 const getAllTempat = async (req, res) => {
   try {
@@ -139,10 +140,48 @@ const hapusTempat = async (req, res) => {
   }
 };
 
+const uploadFotoTempat = async (req, res) => {
+  try {
+    const { tempat_id } = req.body;
+    const user_id = req.user.user_id;
 
+    if (!tempat_id) {
+      return res.status(400).json({ success: false, message: "tempat_id wajib diisi" });
+    }
 
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: "Tidak ada file yang diupload" });
+    }
 
+    for (const file of req.files) {
+      const filePath = path.resolve(file.path);
 
+      const nsfw = await isNSFWImage(filePath);
+
+      if (nsfw) {
+        fs.unlinkSync(filePath);
+
+        return res.status(400).json({
+          success: false,
+          message: "Gambar mengandung konten tidak pantas. Upload ditolak."
+        });
+      }
+    }
+    const result = await tempatService.uploadFotoTempat(tempat_id, req.files, user_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Foto berhasil diupload",
+      data: result
+    });
+  } catch (error) {
+    console.error("Gagal mengupload foto:", error);
+    res.status(500).json({
+      success: false,
+      message: "Gagal mengupload foto"
+    });
+  }
+};
 
 module.exports = {
   getAllTempat,
@@ -150,5 +189,6 @@ module.exports = {
   compareTempat,
   createTempat,
   updateTempat,
-  hapusTempat
+  hapusTempat,
+  uploadFotoTempat
 };

@@ -179,6 +179,28 @@ const hapusTempat = async (tempat_id, user_id) => {
   return result;
 };
 
+const uploadFotoTempat = async (tempat_id, files, user_id) => {
+  if (!tempat_id) {
+    throw new Error("Tempat ID wajib diisi");
+  }
+
+  if (files && files.length > 0) {
+    const fotoPromises = files.map((file) => {
+      return tempatRepository.insertFotoTempat({
+        tempat_id,
+        user_id,
+        foto: file.filename,
+        dibuat_pada: new Date(),
+        dibuat_oleh_user_id: user_id
+      });
+    });
+
+    await Promise.all(fotoPromises);
+  }
+
+  return { success: true };
+};
+
 
 module.exports = {
   getAllTempat,
@@ -186,5 +208,6 @@ module.exports = {
   compareTempat,
   createTempat,
   updateTempat,
-  hapusTempat
+  hapusTempat,
+  uploadFotoTempat
 };

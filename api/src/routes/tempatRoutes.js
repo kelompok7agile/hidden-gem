@@ -8,8 +8,8 @@ const {
 const upload = require("../middlewares/upload_tempat");
 const validateTempat = require('../middlewares/validateTempat');
 
-router.get("/", authenticateUser, tempatController.getAllTempat);
-router.get("/compare", authenticateUser, tempatController.compareTempat);
+router.get("/", tempatController.getAllTempat);
+router.get("/compare", tempatController.compareTempat);
 router.patch(
   "/:id",
   authenticateUser,
@@ -18,7 +18,7 @@ router.patch(
   validateTempat,
   tempatController.updateTempat
 );
-router.get("/:id", authenticateUser, tempatController.getTempatById);
+router.get("/:id", tempatController.getTempatById);
 
 //post
 router.post(
@@ -35,5 +35,11 @@ router.post(
     checkRole("01"),
     tempatController.hapusTempat
 );
+router.post(
+  "/upload-foto",
+  authenticateUser,
+  upload.array("foto_tempat", 10),
+  tempatController.uploadFotoTempat
+)
 
 module.exports = router;
