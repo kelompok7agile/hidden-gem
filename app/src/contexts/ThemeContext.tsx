@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useState } from "react";
+import * as React from "react";
+import { createContext, useEffect, useState } from "react";
 
 type ThemeProviderProps = {
     children: React.ReactNode
@@ -11,9 +12,9 @@ export type ThemeProviderState = {
     setTheme: (theme: string) => void
 }
 
-const initialState = {
+const initialState: ThemeProviderState = {
     theme: "system",
-    setTheme: () => null,
+    setTheme: () => {},
 }
 
 export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -22,39 +23,36 @@ export function ThemeProvider({
     children,
     defaultTheme = "system",
     storageKey = "shadcn-ui-theme",
-    ...props
 }: ThemeProviderProps) {
-    const [theme, setTheme] = useState(
-        () => localStorage.getItem(storageKey) ?? defaultTheme
-    )
+    const [theme, setTheme] = useState<string>(defaultTheme);
 
     useEffect(() => {
-        const root = window.document.documentElement
+        const storedTheme = localStorage.getItem(storageKey);
+        if (storedTheme) {
+            setTheme(storedTheme);
+        }
+    }, [storageKey]);
 
-        root.classList.remove("light", "dark")
+    useEffect(() => {
+        const root = window.document.documentElement;
+        root.classList.remove("light", "dark");
 
         if (theme === "system") {
-            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-                .matches
-                ? "dark"
-                : "light"
-
-            root.classList.add(systemTheme)
-            return
+            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            root.classList.add(systemTheme);
+        } else {
+            root.classList.add(theme);
         }
+    }, [theme]);
 
-        root.classList.add(theme)
-    }, [theme])
+    const updateTheme = (newTheme: string) => {
+        localStorage.setItem(storageKey, newTheme);
+        setTheme(newTheme);
+    };
 
     return (
-        <ThemeProviderContext.Provider {...props} value={{
-            theme,
-            setTheme: (theme: string) => {
-                localStorage.setItem(storageKey, theme)
-                setTheme(theme)
-            },
-        }}>
+        <ThemeProviderContext.Provider value={{ theme, setTheme: updateTheme }}>
             {children}
         </ThemeProviderContext.Provider>
-    )
+    );
 }
