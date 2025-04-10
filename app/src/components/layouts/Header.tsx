@@ -26,6 +26,9 @@ import { ModeToggle } from "../mode-toggle";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import MultiSelect from "../ui/multi-select";
 import axios from "axios";
+import { useAuthContext } from '../../contexts/AuthContext';
+import { log } from "console";
+import { D } from "@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o";
 
 
 interface Fasilitas {
@@ -34,6 +37,7 @@ interface Fasilitas {
     icon: string;
 }
 export function Header() {
+    const { user, logout } = useAuthContext();
     const [open, setOpen] = useState(false)
     const location = useLocation();
 
@@ -195,30 +199,83 @@ export function Header() {
                         </Popover>
                     </div>
                     <nav className="flex items-center space-x-2">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="flex gap-4 px-4 py-4 h-10 ring-1 ring-[#ddd] items-center justify-center rounded-full">
-                                <Icon icon="ci:hamburger-md" width="20" className="cursor-pointer" />
-                                <Button
-                                    variant='ghost'
-                                    className='relative h-8 w-8 rounded-full'>
-                                    <Avatar className='h-8 w-8'>
-                                        <AvatarFallback>FH</AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className='w-56' align='end' forceMount>
-                                <DropdownMenuLabel className='font-normal'>
-                                    <div className='flex flex-col space-y-1'>
-                                        <p className='text-sm font-medium leading-none'>Fajar Hidayat</p>
-                                        <p className='text-xs leading-none text-muted-foreground'>
-                                            fajar.hidayat@traspac.co.id
-                                        </p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Log out</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        {user ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex gap-4 px-4 py-4 h-10 ring-1 ring-[#ddd] items-center justify-center rounded-full">
+                                    <Icon icon="ci:hamburger-md" width="20" className="cursor-pointer" />
+                                    <Button
+                                        variant='ghost'
+                                        className='relative h-8 w-8 rounded-full'>
+                                        <Avatar className='h-8 w-8 capitalize'>
+                                            <AvatarFallback>{user?.short_name}</AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className='w-56' align='end' forceMount>
+                                    <DropdownMenuLabel className='font-normal'>
+                                        <div className='flex flex-col space-y-1'>
+                                            <p className='text-sm font-medium leading-none'>{user?.nama}</p>
+                                            <p className='text-xs leading-none text-muted-foreground'>
+                                                {user?.email}
+                                            </p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={
+                                        () => {
+                                            logout()
+                                            window.location.reload()
+                                        }
+                                    }>Log out</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex gap-4 px-4 py-4 h-10 ring-1 ring-[#ddd] items-center justify-center rounded-full">
+                                    <Icon icon="ci:hamburger-md" width="20" className="cursor-pointer" />
+                                    <Button
+                                        variant='ghost'
+                                        className='relative h-8 w-8 rounded-full'>
+                                        <Avatar className='h-8 w-8'>
+                                            <AvatarFallback>?</AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className='w-56' align='end' forceMount>
+                                    <DropdownMenuLabel className='font-normal'>
+                                        <div className='flex flex-col space-y-1'>
+                                            <p className='text-sm font-medium leading-none text-neutral-700'>Anda Belum Login, Silahkan:</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <Button variant="destructive" className={cn(buttonVariants({ variant: "outline" }), "rounded-xl bg-primary hover:bg-primary/90 text-white hover:text-white w-full h-8 px-4")} size="icon"
+                                            onClick={() => {
+                                                window.location.href = '/auth/login'
+                                            }}>
+                                            Masuk
+                                        </Button>
+                                    </DropdownMenuItem>
+                                            <p className="text-xs text-center font-semibold text-neutral-500">atau</p>
+                                    <DropdownMenuItem>
+                                        <Button variant="destructive" className={cn(buttonVariants({ variant: "outline" }), "rounded-xl bg-primary hover:bg-primary/90 text-white hover:text-white w-full h-8 px-4")} size="icon"
+                                            onClick={() => {
+                                                window.location.href = '/auth/register'
+                                            }}>
+                                            Daftar
+                                        </Button>
+                                    </DropdownMenuItem>
+                                    {/* <DropdownMenuItem onClick={
+                                        () => {
+                                            localStorage.removeItem('token')
+                                            localStorage.removeItem('user')
+                                            window.location.href = '/auth/login'
+                                        }
+                                    }>Log out</DropdownMenuItem> */}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                        )}
                         <ModeToggle />
                     </nav>
                 </div>
