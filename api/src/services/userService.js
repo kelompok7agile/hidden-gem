@@ -46,19 +46,17 @@ const register = async (userData) => {
     });
     return newUser; // Kembalikan data user baru
   } catch (error) {
-    throw error; // Lempar error ke controller
+    throw error; 
   }
 };
 
 const login = async (email, password) => {
   try {
-    //cek email
     const user = await userRepository.findUserByEmail(email);
     if (!user) {
         throw new Error("User not found");
     }
     const isPasswordMatch = await comparePassword(password, user.password);
-    //cek password
     if (!isPasswordMatch) {
         throw new Error("Email atau password salah");
     }
@@ -136,7 +134,7 @@ const getProfile = async (user_id) => {
 const getOpsi = async (value) => {
   try {
     const data = await userRepository.getOpsi(value);
-    
+
     if (!data) {
       throw new Error("Tidak ada data yang ditemukan");
     }

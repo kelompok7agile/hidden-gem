@@ -1,4 +1,7 @@
 const supabase = require("../config/database");
+require("dotenv").config();
+const path = require("path");
+const fs = require("fs-extra");
 
 const getAllUsers = async () => {
   try {
@@ -23,9 +26,21 @@ const getAllUsers = async () => {
       console.error("Error fetching all users:", error.message);
       throw error;
     }
+    
 
     console.log("Fetched users:", data);
-    return data;
+    return data.map((user) => {
+      const filename = user.profile_img;
+      const filePath = path.join(__dirname, "../../uploads/dokumen", filename || "");
+      const fileExists = filename && fs.existsSync(filePath);
+    
+      return {
+        ...user,
+        profile_img: fileExists
+          ? `${process.env.BASE_URL}/dokumen/${filename}`
+          : null,
+      };
+    });
   } catch (err) {
     console.error("Unexpected error fetching all users:", err.message);
     throw err;
@@ -124,6 +139,21 @@ const getUserById = async (userId) => {
   if (error) {
     console.error("Error fetching user by ID:", error.message);
     throw error;
+  }
+
+  if (data?.profile_img) {
+    const filePath = path.join(__dirname, "../../uploads/dokumen", data.profile_img);
+    const fileExists = fs.existsSync(filePath);
+
+    data.profile_img = fileExists
+      ? `${process.env.BASE_URL}/dokumen/${data.profile_img}`
+      : null;
+
+    if (!fileExists) {
+      console.warn(`Profile image tidak ditemukan: ${filePath}`);
+    }
+  } else {
+    data.profile_img = null;
   }
 
   return data;
