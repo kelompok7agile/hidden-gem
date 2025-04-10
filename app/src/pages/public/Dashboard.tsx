@@ -148,6 +148,52 @@ export default function Dashboard() {
                     ))}
                 </div>
             )}
+            {/* {loading ? (
+                <div className="flex items-center justify-center h-screen">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+                </div>
+            ) : (
+                <div className="grid gap-x-2 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {filteredGems.map((place, index) => (
+                        <div
+                            key={index}
+                            className="w-full p-2 rounded-2xl hover:bg-white dark:hover:bg-gray-800 cursor-pointer transition duration-500 ease-in-out intro-y"
+                            onClick={() => navigate(`/hidden-gem/${place.id}`)}
+                        >
+                            <div className="w-full aspect-[16/9] overflow-hidden rounded-xl">
+                                <img
+                                    src={place.thumbnail}
+                                    alt={place.nama_tempat}
+                                    className="w-full h-full object-cover"
+                                    draggable="false"
+                                />
+                            </div>
+                            <div className="mt-2 flex justify-between items-center">
+                                <p className="text-primary text-md font-bold dark:text-gray-100">
+                                    {place.nama_tempat}
+                                </p>
+                                <span className="text-yellow-500 font-bold">{place.rating_tempat} ⭐</span>
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-300 text-sm flex items-center justify-start gap-1 mt-1">
+                                <Icon icon={"material-symbols:location-on-outline"} width={14} height={14} className="text-gray-500" />
+                                <p>{place.lokasi}</p>
+                            </div>
+                            <div className="flex gap-2 flex-wrap mt-1">
+                                {place.fasilitas.map((fasilitas, index) => (
+                                    <span key={index} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md text-xs">
+                                        {fasilitas}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-300 text-xs flex items-center justify-start gap-1 mt-1">
+                                <p className="text-gray-700 font-semibold">Open</p>
+                                <p>{place.waktu_open}</p>
+                                <Icon icon={"material-symbols:alarm-outline-rounded"} width={14} height={14} className="text-gray-500" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )} */}
             <div>
                 {data?.pages.map((page, i) => (
                     <Fragment key={i}>
