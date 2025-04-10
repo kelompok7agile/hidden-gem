@@ -81,9 +81,25 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  try {
+    const { user_id } = req.user;
+
+    const user = await userService.getProfile(user_id);
+
+    res.status(200).json(formatMessage("Profile berhasil diambil", user));
+  } catch (error) {
+    console.error("Kesalahan saat mengambil profile:", error.message);
+    res
+      .status(500)
+      .json(formatMessage("Terjadi kesalahan saat mengambil profile", 500));
+  }
+};
+
 module.exports = {
   getAllUsers,
   register,
   login,
   updateProfile,
+  getProfile,
 };

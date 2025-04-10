@@ -118,9 +118,25 @@ const updateProfile = async (user_id, userData, file) => {
   }
 };
 
+const getProfile = async (user_id) => {
+  try {
+
+    const user = await userRepository.getUserById(user_id);
+
+    if (!user) {
+      throw new Error("Tidak ada data user yang ditemukan");
+    }
+
+    return user; 
+  } catch (error) {
+    throw error; 
+  }
+};
+
 module.exports = {
   register,
   login,
   getAllUsers,
   updateProfile,
+  getProfile,
 };

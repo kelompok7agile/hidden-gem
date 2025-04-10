@@ -11,6 +11,7 @@ const getAllUsers = async () => {
           email,
           no_telepon,
           user_group_id,
+          profile_img,
           user_group (
             nama
           )
@@ -46,7 +47,6 @@ const findUserByEmail = async (email) => {
   return data;
 };
 
-//buat user baru
 const createUser = async (user) => {
   console.log("Inserting user:", user);
 
@@ -102,9 +102,38 @@ const updateUser = async (userId, userData) => {
   return data;
 };
 
+const getUserById = async (userId) => {
+  const { data, error } = await supabase
+    .from("user")
+    .select(
+      `
+        user_id,
+        nama,
+        email,
+        no_telepon,
+        profile_img,
+        user_group_id,
+        user_group (
+          nama
+        )
+      `
+    )
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching user by ID:", error.message);
+    throw error;
+  }
+
+  return data;
+};
+
+
 module.exports = {
   findUserByEmail,
   createUser,
   getAllUsers,
   updateUser,
+  getUserById,
 };

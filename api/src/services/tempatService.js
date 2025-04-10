@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const getAllTempat = async (filters) => {
-  const { nama, kategori, fasilitas } = filters;
+  const { nama, kategori, fasilitas, limit = 20, offset = 1 } = filters;
 
   let kategoriArray = [];
   if (kategori) {
@@ -29,20 +29,37 @@ const getAllTempat = async (filters) => {
     }
   }
 
-  const tempat = await tempatRepository.getAllTempat({
+  const parsedLimit = parseInt(limit);
+  const parsedOffset = parseInt(offset);
+
+  const offsetData = (parsedOffset) * parsedLimit;
+
+  const { data, total_data } = await tempatRepository.getAllTempat({
     nama,
     kategori: kategoriArray,
     fasilitas: fasilitasArray,
+    limit: parsedLimit,
+    offset: offsetData,
   });
 
-  if (!tempat || tempat.length === 0) {
-    throw new Error("Tidak ada data tempat yang ditemukan");
+  const total_page = Math.ceil(total_data / parsedLimit);
+
+  if (parsedOffset > total_page) {
+    return {
+      data: [],
+      total_data,
+      total_page,
+      halaman_sekarang: parsedOffset,
+    };
   }
 
-  return tempat;
+  return {
+    data,
+    total_data,
+    total_page,
+    halaman_sekarang: parsedOffset,
+  };
 };
-
-
 
 const getTempatById = async (id) => {
   try {
@@ -54,14 +71,14 @@ const getTempatById = async (id) => {
 
     return tempat;
   } catch (error) {
-    throw error; 
+    throw error;
   }
 };
 
 const compareTempat = async (id1, id2) => {
   const [tempat1, tempat2] = await Promise.all([
     tempatRepository.getTempatById(id1),
-    tempatRepository.getTempatById(id2)
+    tempatRepository.getTempatById(id2),
   ]);
 
   if (!tempat1 || !tempat2) {
@@ -70,19 +87,18 @@ const compareTempat = async (id1, id2) => {
 
   return {
     tempat_1: tempat1,
-    tempat_2: tempat2
+    tempat_2: tempat2,
   };
 };
 
 const createTempat = async (body, files, user_id) => {
-
   const {
     nama,
     deskripsi,
     alamat,
     jam_operasional,
     link_gmaps,
-    list_kategori_tempat_id
+    list_kategori_tempat_id,
   } = body;
 
   if (!nama || !jam_operasional || !alamat) {
@@ -95,7 +111,7 @@ const createTempat = async (body, files, user_id) => {
     alamat,
     link_gmaps,
     jam_operasional: JSON.parse(jam_operasional),
-    list_kategori_tempat_id
+    list_kategori_tempat_id,
   });
 
   console.log(files);
@@ -109,7 +125,7 @@ const createTempat = async (body, files, user_id) => {
         user_id,
         foto: file.filename,
         dibuat_pada: new Date(),
-        dibuat_oleh_user_id: user_id
+        dibuat_oleh_user_id: user_id,
       });
     });
 
@@ -126,7 +142,7 @@ const updateTempat = async (tempat_id, body, files, user_id) => {
     deskripsi,
     link_gmaps,
     jam_operasional,
-    list_kategori_tempat_id
+    list_kategori_tempat_id,
   } = body;
 
   const parsedJam = jam_operasional ? JSON.parse(jam_operasional) : undefined;
@@ -160,7 +176,7 @@ const updateTempat = async (tempat_id, body, files, user_id) => {
         user_id,
         foto: file.filename,
         dibuat_pada: new Date(),
-        dibuat_oleh_user_id: user_id
+        dibuat_oleh_user_id: user_id,
       });
     });
 
@@ -173,7 +189,7 @@ const updateTempat = async (tempat_id, body, files, user_id) => {
 const hapusTempat = async (tempat_id, user_id) => {
   const result = await tempatRepository.softDeleteTempat(tempat_id, {
     dihapus_pada: new Date(),
-    dihapus_oleh_user_id: user_id
+    dihapus_oleh_user_id: user_id,
   });
 
   return result;
@@ -191,7 +207,7 @@ const uploadFotoTempat = async (tempat_id, files, user_id) => {
         user_id,
         foto: file.filename,
         dibuat_pada: new Date(),
-        dibuat_oleh_user_id: user_id
+        dibuat_oleh_user_id: user_id,
       });
     });
 
@@ -201,7 +217,6 @@ const uploadFotoTempat = async (tempat_id, files, user_id) => {
   return { success: true };
 };
 
-
 module.exports = {
   getAllTempat,
   getTempatById,
@@ -209,5 +224,5 @@ module.exports = {
   createTempat,
   updateTempat,
   hapusTempat,
-  uploadFotoTempat
+  uploadFotoTempat,
 };

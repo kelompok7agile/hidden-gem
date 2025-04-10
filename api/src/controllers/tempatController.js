@@ -4,12 +4,14 @@ const { isNSFWImage } = require('../validations/nsfwCheck');
 
 const getAllTempat = async (req, res) => {
   try {
-    const { nama, kategori, fasilitas } = req.query;
+    const { nama, kategori, fasilitas, limit = 20, offset = 0 } = req.query;
 
     const tempat = await tempatService.getAllTempat({
       nama,
       kategori,
-      fasilitas
+      fasilitas,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
     });
 
     res.status(200).json(formatMessage("Data tempat berhasil diambil", tempat));
@@ -18,6 +20,7 @@ const getAllTempat = async (req, res) => {
     res.status(500).json(formatMessage("Terjadi kesalahan saat mengambil data tempat", null, 500));
   }
 };
+
 
 
 const getTempatById = async (req, res) => {

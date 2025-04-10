@@ -18,6 +18,12 @@ router.post(
 
 router.post("/login", userController.login);
 
+router.get(
+  "/profile",
+  authenticateUser,
+  userController.getProfile
+);
+
 const upload = require("../middlewares/upload");
 
 router.patch(

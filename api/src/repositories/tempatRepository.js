@@ -1,9 +1,9 @@
 const supabase = require("../config/database");
 
-const getAllTempat = async ({ nama, kategori = [], fasilitas = [] } = {}) => {
+const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, offset = 0 }) => {
   let query = supabase
     .from("tempat")
-    .select("tempat_id, nama, deskripsi, alamat, link_gmaps, jam_operasional")
+    .select("tempat_id, nama, deskripsi, alamat, link_gmaps, jam_operasional, list_kategori_tempat_id, list_fasilitas_id", { count: "exact" })
     .is("dihapus_pada", null);
 
   if (nama) {
@@ -11,87 +11,118 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [] } = {}) => {
   }
 
   if (Array.isArray(kategori) && kategori.length > 0) {
-    const kategoriFilter = kategori
-      .map((id) => `list_kategori_tempat_id.ilike.%${id}%`)
-      .join(",");
+    const kategoriFilter = kategori.map((id) => `list_kategori_tempat_id.ilike.%${id}%`).join(",");
     query = query.or(kategoriFilter);
   }
 
   if (Array.isArray(fasilitas) && fasilitas.length > 0) {
-    const fasilitasFilter = fasilitas
-      .map((id) => `list_fasilitas_id.ilike.%${id}%`)
-      .join(",");
+    const fasilitasFilter = fasilitas.map((id) => `list_fasilitas_id.ilike.%${id}%`).join(",");
     query = query.or(fasilitasFilter);
   }
 
-  const { data: tempatList, error } = await query;
+  query = query.range(offset, offset + limit - 1);
 
+  const { data: tempatList, error, count } = await query;
   if (error) {
     console.error("Gagal mengambil data tempat:", error.message);
     throw error;
   }
 
-  if (!tempatList || tempatList.length === 0) {
-    return [];
-  }
-
   const tempatIds = tempatList.map((t) => t.tempat_id);
 
-  const { data: fotoData, error: fotoError } = await supabase
+  const { data: fotoData } = await supabase
     .from("foto_tempat")
     .select("tempat_id, foto, user:user_id(user_group_id)")
     .in("tempat_id", tempatIds);
 
-  if (fotoError) {
-    console.error("Gagal mengambil foto tempat:", fotoError.message);
-    throw fotoError;
-  }
-
   const fotoByTempat = {};
-  fotoData
-    .filter((foto) => foto.user?.user_group_id === "01")
-    .forEach((foto) => {
-      if (!fotoByTempat[foto.tempat_id]) {
-        fotoByTempat[foto.tempat_id] = [];
-      }
-      fotoByTempat[foto.tempat_id].push(foto.foto);
+  fotoData?.forEach((foto) => {
+    if (!fotoByTempat[foto.tempat_id]) {
+      fotoByTempat[foto.tempat_id] = [];
+    }
+    fotoByTempat[foto.tempat_id].push({
+      foto: foto.foto,
+      user_group_id: foto.user?.user_group_id
+    });
   });
 
-  const { data: ratingData, error: ratingError } = await supabase
-  .from("rating")
-  .select("tempat_id, rating")
-  .in("tempat_id", tempatIds);
-
-  if (ratingError) {
-    console.error("Gagal mengambil data rating:", ratingError.message);
-    throw ratingError;
-  }
+  const { data: ratingData } = await supabase
+    .from("rating")
+    .select("tempat_id, rating")
+    .in("tempat_id", tempatIds);
 
   const ratingByTempat = {};
-  ratingData.forEach(({ tempat_id, rating }) => {
+  ratingData?.forEach(({ tempat_id, rating }) => {
     if (!ratingByTempat[tempat_id]) {
       ratingByTempat[tempat_id] = [];
     }
     ratingByTempat[tempat_id].push(rating);
   });
 
-  const tempatDenganFoto = tempatList.map((tempat) => {
+  const allKategoriIds = [...new Set(tempatList.flatMap(t =>
+    (t.list_kategori_tempat_id || "").split(",").map((k) => k.trim()).filter(Boolean)
+  ))];
+
+  const allFasilitasIds = [...new Set(tempatList.flatMap(t =>
+    (t.list_fasilitas_id || "").split(",").map((f) => f.trim()).filter(Boolean)
+  ))];
+
+  const { data: kategoriData } = await supabase
+    .from("kategori_tempat")
+    .select("kategori_tempat_id, nama")
+    .in("kategori_tempat_id", allKategoriIds);
+
+  const { data: fasilitasData } = await supabase
+    .from("fasilitas")
+    .select("fasilitas_id, nama")
+    .in("fasilitas_id", allFasilitasIds);
+
+  const kategoriMap = {};
+  kategoriData?.forEach((item) => kategoriMap[item.kategori_tempat_id] = item.nama);
+
+  const fasilitasMap = {};
+  fasilitasData?.forEach((item) => fasilitasMap[item.fasilitas_id] = item.nama);
+
+  const tempatDenganDetail = tempatList.map((tempat) => {
     const ratings = ratingByTempat[tempat.tempat_id] || [];
-    const avgRating =
-      ratings.length > 0
-        ? parseFloat((ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2))
-        : 0;
-  
+    const avgRating = ratings.length > 0
+      ? parseFloat((ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2))
+      : 0;
+
+    const fotoTempat = fotoByTempat[tempat.tempat_id] || [];
+    const detail_foto = fotoTempat
+      .filter((f) => f.user_group_id === "01")
+      .map((f) => f.foto);
+
+    const kategori = (tempat.list_kategori_tempat_id || "")
+      .split(",")
+      .map((id) => kategoriMap[id.trim()])
+      .filter(Boolean);
+
+    const fasilitas = (tempat.list_fasilitas_id || "")
+      .split(",")
+      .map((id) => fasilitasMap[id.trim()])
+      .filter(Boolean);
+
     return {
-      ...tempat,
-      detail_foto: fotoByTempat[tempat.tempat_id] || [],
+      tempat_id: tempat.tempat_id,
+      nama: tempat.nama,
+      deskripsi: tempat.deskripsi,
+      alamat: tempat.alamat,
+      link_gmaps: tempat.link_gmaps,
+      jam_operasional: tempat.jam_operasional,
+      detail_foto,
       rating_count: avgRating,
+      kategori,
+      fasilitas
     };
   });
 
-  return tempatDenganFoto;
+  return {
+    data: tempatDenganDetail,
+    total_data: count || 0,
+  };
 };
-
 
 
 const getTempatById = async (id) => {
