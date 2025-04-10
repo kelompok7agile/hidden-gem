@@ -27,11 +27,19 @@ const convertJamOperasional = (jamObj) => {
   });
 };
 
-
-const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, offset = 0 }) => {
+const getAllTempat = async ({
+  nama,
+  kategori = [],
+  fasilitas = [],
+  limit = 20,
+  offset = 0,
+}) => {
   let query = supabase
     .from("tempat")
-    .select("tempat_id, nama, deskripsi, alamat, link_gmaps, jam_operasional, list_kategori_tempat_id, list_fasilitas_id", { count: "exact" })
+    .select(
+      "tempat_id, nama, deskripsi, alamat, link_gmaps, jam_operasional, list_kategori_tempat_id, list_fasilitas_id",
+      { count: "exact" }
+    )
     .is("dihapus_pada", null);
 
   if (nama) {
@@ -39,12 +47,16 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
   }
 
   if (Array.isArray(kategori) && kategori.length > 0) {
-    const kategoriFilter = kategori.map((id) => `list_kategori_tempat_id.ilike.%${id}%`).join(",");
+    const kategoriFilter = kategori
+      .map((id) => `list_kategori_tempat_id.ilike.%${id}%`)
+      .join(",");
     query = query.or(kategoriFilter);
   }
 
   if (Array.isArray(fasilitas) && fasilitas.length > 0) {
-    const fasilitasFilter = fasilitas.map((id) => `list_fasilitas_id.ilike.%${id}%`).join(",");
+    const fasilitasFilter = fasilitas
+      .map((id) => `list_fasilitas_id.ilike.%${id}%`)
+      .join(",");
     query = query.or(fasilitasFilter);
   }
 
@@ -85,13 +97,27 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
     ratingByTempat[tempat_id].push(rating);
   });
 
-  const allKategoriIds = [...new Set(tempatList.flatMap(t =>
-    (t.list_kategori_tempat_id || "").split(",").map((k) => k.trim()).filter(Boolean)
-  ))];
+  const allKategoriIds = [
+    ...new Set(
+      tempatList.flatMap((t) =>
+        (t.list_kategori_tempat_id || "")
+          .split(",")
+          .map((k) => k.trim())
+          .filter(Boolean)
+      )
+    ),
+  ];
 
-  const allFasilitasIds = [...new Set(tempatList.flatMap(t =>
-    (t.list_fasilitas_id || "").split(",").map((f) => f.trim()).filter(Boolean)
-  ))];
+  const allFasilitasIds = [
+    ...new Set(
+      tempatList.flatMap((t) =>
+        (t.list_fasilitas_id || "")
+          .split(",")
+          .map((f) => f.trim())
+          .filter(Boolean)
+      )
+    ),
+  ];
 
   const { data: kategoriData } = await supabase
     .from("kategori_tempat")
@@ -104,16 +130,23 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
     .in("fasilitas_id", allFasilitasIds);
 
   const kategoriMap = {};
-  kategoriData?.forEach((item) => kategoriMap[item.kategori_tempat_id] = item.nama);
+  kategoriData?.forEach(
+    (item) => (kategoriMap[item.kategori_tempat_id] = item.nama)
+  );
 
   const fasilitasMap = {};
-  fasilitasData?.forEach((item) => fasilitasMap[item.fasilitas_id] = item.nama);
+  fasilitasData?.forEach(
+    (item) => (fasilitasMap[item.fasilitas_id] = item.nama)
+  );
 
   const tempatDenganDetail = tempatList.map((tempat) => {
     const ratings = ratingByTempat[tempat.tempat_id] || [];
-    const avgRating = ratings.length > 0
-      ? parseFloat((ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2))
-      : 0;
+    const avgRating =
+      ratings.length > 0
+        ? parseFloat(
+            (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2)
+          )
+        : 0;
 
     const kategori = (tempat.list_kategori_tempat_id || "")
       .split(",")
@@ -125,10 +158,14 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
       .map((id) => fasilitasMap[id.trim()])
       .filter(Boolean);
 
-      const filename = thumbnailByTempat[tempat.tempat_id];
+    const filename = thumbnailByTempat[tempat.tempat_id];
 
-      const filePath = path.join(__dirname, "../../uploads/dokumen", filename || "");
-      const fileExists = filename && fs.existsSync(filePath);
+    const filePath = path.join(
+      __dirname,
+      "../../uploads/dokumen",
+      filename || ""
+    );
+    const fileExists = filename && fs.existsSync(filePath);
 
     return {
       tempat_id: tempat.tempat_id,
@@ -137,10 +174,12 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
       alamat: tempat.alamat,
       link_gmaps: tempat.link_gmaps,
       jam_operasional: convertJamOperasional(tempat.jam_operasional),
-      thumbnail: fileExists ? `${process.env.API_BASE_URL}/dokumen/${filename}` : null,
+      thumbnail: fileExists
+        ? `${process.env.API_BASE_URL}/dokumen/${filename}`
+        : null,
       rating_count: avgRating,
       kategori,
-      fasilitas
+      fasilitas,
     };
   });
 
@@ -149,8 +188,6 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
     total_data: count || 0,
   };
 };
-
-
 
 const getTempatById = async (id) => {
   try {
@@ -186,25 +223,39 @@ const getTempatById = async (id) => {
       .select("foto, user:user_id(user_group_id)")
       .eq("tempat_id", id);
 
-    if (fotoError) throw fotoError;
+    const buildFotoUrl = (filename) => {
+      const filePath = path.join(
+        __dirname,
+        "../../uploads/dokumen",
+        filename || ""
+      );
+      const fileExists = filename && fs.existsSync(filePath);
+      return fileExists ? `${BASE_URL}/dokumen/${filename}` : null;
+    };
 
-    const detail_foto = fotoData.filter((foto) => foto.user?.user_group_id === "01").map((f) => f.url);
-    const galery = fotoData.filter((foto) => foto.user?.user_group_id !== "02").map((f) => f.url);
+    if (fotoError) throw fotoError;
+    const detail_foto = fotoData
+      .filter((foto) => foto.user?.user_group_id === "01")
+      .map((f) => buildFotoUrl(f.foto))
+      .filter(Boolean);
+
+    const galery = fotoData
+      .filter((foto) => foto.user?.user_group_id !== "02")
+      .map((f) => buildFotoUrl(f.foto))
+      .filter(Boolean);
 
     return {
       ...tempat,
       kategori: kategori.map((item) => item.nama),
       fasilitas: fasilitas.map((item) => item.nama),
-      detail_foto,
+      foto: [...detail_foto, ...galery],
       jam_operasional: convertJamOperasional(tempat.jam_operasional),
-      galery,
     };
   } catch (error) {
     console.error("Kesalahan saat mengambil detail tempat:", error.message);
     throw error;
   }
 };
-
 
 const insertTempat = async (data) => {
   const { data: result, error } = await supabase
