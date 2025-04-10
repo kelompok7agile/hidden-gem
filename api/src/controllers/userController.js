@@ -33,13 +33,29 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  const { email, password } = req.body;
+  
   try {
-    const { email, password } = req.body;
+    if(!email || !password || email === "" || password === "") {
+      return res.status(400).json({
+        success: false,
+        code: 400,
+        message: "Email dan password tidak boleh kosong",
+      });
+    }
     const token = await userService.login(email, password);
-    res.status(200).json(formatMessage("Login berhasil", token));
+    return res.status(200).json({
+      success: true,
+      code: 200,
+      message: "Login berhasil",
+      data: { token },
+    });
   } catch (error) {
-    console.error("Kesalahan saat login:", error.message);
-    res.status(500).json(formatMessage("Terjadi kesalahan saat login", 500));
+    return res.status(400).json({
+      success: false,
+      code: 400,
+      message: "Email atau password salah",
+    });
   }
 };
 
