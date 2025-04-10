@@ -43,12 +43,12 @@ const login = async (req, res) => {
         message: "Email dan password tidak boleh kosong",
       });
     }
-    const token = await userService.login(email, password);
+    const data = await userService.login(email, password);
     return res.status(200).json({
       success: true,
       code: 200,
       message: "Login berhasil",
-      data: { token },
+      data
     });
   } catch (error) {
     return res.status(400).json({
