@@ -133,10 +133,25 @@ const getProfile = async (user_id) => {
   }
 };
 
+const getOpsi = async (value) => {
+  try {
+    const data = await userRepository.getOpsi(value);
+    
+    if (!data) {
+      throw new Error("Tidak ada data yang ditemukan");
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   register,
   login,
   getAllUsers,
   updateProfile,
   getProfile,
+  getOpsi,
 };

@@ -129,6 +129,48 @@ const getUserById = async (userId) => {
   return data;
 };
 
+const getOpsi = async (value) => { 
+
+  let data = null;
+  if (value == 'fasilitas') {
+    const { data: data_value, error } = await supabase
+      .from("fasilitas")
+      .select("*")
+      .order("fasilitas_id", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching options:", error.message);
+      throw error;
+    }
+
+    data = data_value.map((item) => ({
+      id: item.fasilitas_id,
+      name: item.nama,
+      icon: item.icon,
+    }));
+  } else if (value == 'kategori-tempat') {
+    const { data: data_value, error } = await supabase
+      .from("kategori_tempat")
+      .select("*")
+      .order("kategori_tempat_id", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching options:", error.message);
+      throw error;
+    }
+
+    data = data_value.map((item) => ({
+      id: item.kategori_tempat_id,
+      name: item.nama,
+      icon: item.icon,
+    }));
+  } else {
+    throw new Error("Opsi Tidak Ditemukan");
+  }
+
+  return data;
+}
+
 
 module.exports = {
   findUserByEmail,
@@ -136,4 +178,5 @@ module.exports = {
   getAllUsers,
   updateUser,
   getUserById,
+  getOpsi,
 };

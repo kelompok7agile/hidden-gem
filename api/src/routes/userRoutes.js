@@ -33,4 +33,9 @@ router.patch(
   userController.updateProfile
 );
 
+router.get(
+  "/get-opsi/:opsi",
+  userController.getOpsi
+)
+
 module.exports = router;

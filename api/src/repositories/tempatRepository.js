@@ -1,4 +1,32 @@
 const supabase = require("../config/database");
+require("dotenv").config();
+const path = require("path");
+const fs = require("fs-extra");
+
+const convertJamOperasional = (jamObj) => {
+  if (!jamObj || typeof jamObj !== "object") return [];
+
+  const hariUrut = [
+    "senin",
+    "selasa",
+    "rabu",
+    "kamis",
+    "jumat",
+    "sabtu",
+    "minggu",
+  ];
+
+  return hariUrut.map((hari) => {
+    const jam = jamObj[hari];
+    return {
+      hari,
+      buka: jam?.buka || null,
+      tutup: jam?.tutup || null,
+      libur: jam === null,
+    };
+  });
+};
+
 
 const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, offset = 0 }) => {
   let query = supabase
@@ -35,16 +63,14 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
     .select("tempat_id, foto, user:user_id(user_group_id)")
     .in("tempat_id", tempatIds);
 
-  const fotoByTempat = {};
-  fotoData?.forEach((foto) => {
-    if (!fotoByTempat[foto.tempat_id]) {
-      fotoByTempat[foto.tempat_id] = [];
-    }
-    fotoByTempat[foto.tempat_id].push({
-      foto: foto.foto,
-      user_group_id: foto.user?.user_group_id
+  const thumbnailByTempat = {};
+  fotoData
+    ?.filter((f) => f.user?.user_group_id === "01")
+    .forEach((foto) => {
+      if (!thumbnailByTempat[foto.tempat_id]) {
+        thumbnailByTempat[foto.tempat_id] = foto.foto;
+      }
     });
-  });
 
   const { data: ratingData } = await supabase
     .from("rating")
@@ -89,11 +115,6 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
       ? parseFloat((ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2))
       : 0;
 
-    const fotoTempat = fotoByTempat[tempat.tempat_id] || [];
-    const detail_foto = fotoTempat
-      .filter((f) => f.user_group_id === "01")
-      .map((f) => f.foto);
-
     const kategori = (tempat.list_kategori_tempat_id || "")
       .split(",")
       .map((id) => kategoriMap[id.trim()])
@@ -104,14 +125,19 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
       .map((id) => fasilitasMap[id.trim()])
       .filter(Boolean);
 
+      const filename = thumbnailByTempat[tempat.tempat_id];
+
+      const filePath = path.join(__dirname, "../../uploads/dokumen", filename || "");
+      const fileExists = filename && fs.existsSync(filePath);
+
     return {
       tempat_id: tempat.tempat_id,
       nama: tempat.nama,
       deskripsi: tempat.deskripsi,
       alamat: tempat.alamat,
       link_gmaps: tempat.link_gmaps,
-      jam_operasional: tempat.jam_operasional,
-      detail_foto,
+      jam_operasional: convertJamOperasional(tempat.jam_operasional),
+      thumbnail: fileExists ? `${process.env.API_BASE_URL}/dokumen/${filename}` : null,
       rating_count: avgRating,
       kategori,
       fasilitas
@@ -123,6 +149,7 @@ const getAllTempat = async ({ nama, kategori = [], fasilitas = [], limit = 20, o
     total_data: count || 0,
   };
 };
+
 
 
 const getTempatById = async (id) => {
@@ -169,6 +196,7 @@ const getTempatById = async (id) => {
       kategori: kategori.map((item) => item.nama),
       fasilitas: fasilitas.map((item) => item.nama),
       detail_foto,
+      jam_operasional: convertJamOperasional(tempat.jam_operasional),
       galery,
     };
   } catch (error) {

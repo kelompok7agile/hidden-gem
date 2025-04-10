@@ -3,7 +3,7 @@ const supabase = require("../config/database");
 const findByNama = async (nama) => {
   const { data, error } = await supabase
     .from("kategori_tempat")
-    .select("kategori_tempat_id, nama")
+    .select("kategori_tempat_id, nama, icon")
     .eq("nama", nama)
     .maybeSingle();
 
@@ -15,7 +15,7 @@ const findByNama = async (nama) => {
 const getAll = async () => {
   const { data, error } = await supabase
     .from("kategori_tempat")
-    .select("kategori_tempat_id, nama")
+    .select("kategori_tempat_id, nama, icon")
     .order("kategori_tempat_id", { ascending: true });
 
   if (error) throw error;
