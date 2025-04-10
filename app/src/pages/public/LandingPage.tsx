@@ -52,7 +52,7 @@ export default function LandingPage() {
               </Button>
 
               <Button variant={'default'} size={"lg"} onClick={() => {
-                window.location.href = "/login";
+                window.location.href = "/auth/login";
               }}>
                 <span>Login</span>
               </Button>
@@ -86,7 +86,7 @@ export default function LandingPage() {
           <button
             className="bg-primary mx-auto hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center"
             onClick={() => {
-              window.location.href = "/";
+              window.location.href = "/app";
             }}
           >
             Eksplor Tempat <Icon icon="mdi:arrow-right" className="ml-2" />
