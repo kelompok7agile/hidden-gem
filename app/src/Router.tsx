@@ -9,12 +9,17 @@ import Sample from "./pages/Sample";
 import LandingPage from "./pages/public/LandingPage";
 import Profil from "./pages/public/profil";
 import FormProfil from "./pages/public/profil/form";
+import LoginPage from "./pages/public/LoginPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     index: true,
     element: <LandingPage />, // Set LandingPage as the default route
+  },
+  {
+    path: "/auth/login",
+    element: <LoginPage />,
   },
   {
     path: "/app",
