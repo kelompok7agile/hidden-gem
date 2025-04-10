@@ -2,9 +2,12 @@
 import axios from "axios";
 
 const token = localStorage.getItem("token");
+const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/";
 
+console.log('baseUrl', baseUrl);
+console.log('token', token);
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: baseUrl,
   headers: {
     "Content-Type": "application/json",
   },

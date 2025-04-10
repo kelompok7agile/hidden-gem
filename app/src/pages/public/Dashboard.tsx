@@ -1,9 +1,10 @@
 import { PageHeader, PageHeaderHeading } from "@/components/page-header";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import axios from "axios";
+import { useTempat } from "@/hooks/useTempat";
 
 interface HiddenGem {
     id: number;
@@ -24,6 +25,13 @@ interface Category {
 
 
 export default function Dashboard() {
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useTempat();
+
     const navigate = useNavigate();
     const [tabActive, setTabActive] = useState('semua');
     const [hiddenGems, setHiddenGems] = useState<HiddenGem[]>([]);
@@ -69,7 +77,7 @@ export default function Dashboard() {
         fetchCategories();
     }, []);
 
-   
+
 
     useEffect(() => {
         console.log(filteredGems);
@@ -140,6 +148,28 @@ export default function Dashboard() {
                     ))}
                 </div>
             )}
+            <div>
+                {data?.pages.map((page, i) => (
+                    <Fragment key={i}>
+                        {page.data.data.map((tempat: any) => (
+                            <div key={tempat.tempat_id} className="mb-4 p-4 border rounded">
+                                <h2 className="text-lg font-bold">{tempat.nama}</h2>
+                                <p className="text-sm">{tempat.deskripsi}</p>
+                            </div>
+                        ))}
+                    </Fragment>
+                ))}
+
+                {hasNextPage && (
+                    <button
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
+                        className="px-4 py-2 bg-blue-500 text-white rounded mt-4"
+                    >
+                        {isFetchingNextPage ? 'Loading more...' : 'Load More'}
+                    </button>
+                )}
+            </div >
         </>
     );
 }
