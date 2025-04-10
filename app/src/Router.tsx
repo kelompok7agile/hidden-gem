@@ -7,6 +7,8 @@ import Dashboard from "./pages/public/Dashboard";
 import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
 import LandingPage from "./pages/public/LandingPage";
+import Profil from "./pages/public/profil";
+import FormProfil from "./pages/public/profil/form";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +32,14 @@ export const router = createBrowserRouter([
         path: "empty",
         element: <Empty />,
       },
+      {
+        path: "profil",
+        element: <Profil />,
+      },
+      {
+        path: "profil/ubah",  
+        element: <FormProfil />,
+      }
     ],
   },
   // {
