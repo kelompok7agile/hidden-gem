@@ -10,6 +10,9 @@ export default defineConfig(({ command }) => {
   return {
     base: isProd ? basenameProd : "/",
     plugins: [react()],
+    server: {
+      port: 3000,
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

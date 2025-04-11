@@ -36,7 +36,7 @@ const register = async (userData) => {
     const { hashedPassword, salt } = await hashPassword(password);
 
     // Buat user baru
-    const newUser = await userRepository.createUser({
+    const createUser = await userRepository.createUser({
       nama,
       email,
       password: hashedPassword,
@@ -44,7 +44,18 @@ const register = async (userData) => {
       no_telepon,
       user_group_id,
     });
-    return newUser; // Kembalikan data user baru
+
+    if (!createUser) {
+      throw new Error("Gagal membuat user baru");
+    }
+
+    const user = await userRepository.findUserByEmail(email);
+    if (!user) {
+      throw new Error("User tidak ditemukan setelah pendaftaran");
+    }
+    const { new_password, salt_password, ...other } = user;
+    console.log("newUser: ", other);
+    return other;
   } catch (error) {
     throw error;
   }

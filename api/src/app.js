@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+require("dotenv").config();
 
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes.js");
@@ -10,6 +11,7 @@ const resetRoutes = require("./routes/resetRoutes.js");
 const reviewRoutes = require("./routes/reviewRoutes.js");
 
 const app = express();
+
 
 app.use(cors());
 app.use(express.json());

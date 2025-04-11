@@ -10,6 +10,7 @@ import LandingPage from "./pages/public/LandingPage";
 import Profil from "./pages/public/profil";
 import FormProfil from "./pages/public/profil/form";
 import LoginPage from "./pages/public/LoginPage";
+import RegisterPage from "./pages/public/RegisterPage";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
   {
     path: "/auth/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/auth/register",
+    element: <RegisterPage />,
   },
   {
     path: "/app",
