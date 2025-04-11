@@ -23,7 +23,7 @@ const getAllUsers = async (res) => {
 const register = async (req, res) => {
   try {
     const newUser = await userService.register(req.body);
-    res.status(201).json(formatMessage("User berhasil didaftarkan", newUser));
+    res.status(201).json(formatMessage("User berhasil didaftarkan", newUser, 201));
   } catch (error) {
     console.error("Kesalahan saat membuat user:", error.message);
     res
