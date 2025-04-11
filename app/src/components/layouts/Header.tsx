@@ -7,6 +7,7 @@ import { appConfig } from "@/config/app";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
+import logo from "../../assets/image/logo/logo.png";
 
 import {
     DropdownMenu,
@@ -75,87 +76,7 @@ export function Header() {
                     </nav>
 
                 </div>
-                {/* mobile */}
-                {/* <Sheet open={open} onOpenChange={setOpen}>
-                    <SheetTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="mr-4 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden">
-                            <ViewVerticalIcon className="h-5 w-5" />
-                            <span className="sr-only">Toggle Menu</span>
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="pr-0 sm:max-w-xs">
-                        <NavLink
-                            to="/"
-                            onClick={() => setOpen(false)}
-                            className="flex items-center space-x-2">
-                            <Logo />
-                        </NavLink>
-                        <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-8 pl-8">
-                            <Accordion type="single" collapsible className="w-full"
-                                defaultValue={"item-" + mainMenu.findIndex(item => item.items !== undefined ? item.items.filter(subitem => subitem.to !== undefined).map(subitem => subitem.to).includes(location.pathname) : false)}>
-                                <div className="flex flex-col space-y-3">
-                                    {mainMenu.map((menu, index) =>
-                                        menu.items !== undefined ? (
-                                            <AccordionItem key={index} value={`item-${index}`} className="border-b-0 pr-6">
-                                                <AccordionTrigger className={cn(
-                                                    "py-1 hover:no-underline hover:text-primary [&[data-state=open]]:text-primary",
-                                                    (menu.items.filter(subitem => subitem.to !== undefined).map(subitem => subitem.to))
-                                                        .includes(location.pathname) ? 'text-foreground' : 'text-foreground/60',
-                                                )}>
-                                                    <div className="flex">{menu.title}</div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="pb-1 pl-4">
-                                                    <div className="mt-1">
-                                                        {menu.items.map((submenu, subindex) => (
-                                                            submenu.to !== undefined ? (
-                                                                <NavLink
-                                                                    key={subindex}
-                                                                    to={submenu.to}
-                                                                    onClick={() => setOpen(false)}
-                                                                    className={({ isActive }) => cn(
-                                                                        "block justify-start py-1 h-auto font-normal hover:text-primary",
-                                                                        isActive ? 'text-foreground' : 'text-foreground/60',
-                                                                    )}>
-                                                                    {submenu.title}
-                                                                </NavLink>
-                                                            ) : (
-                                                                submenu.label !== '' ? (
-                                                                    null
-                                                                ) : (
-                                                                    <div className="px-3">
-                                                                        <span className="text-sm font-medium text-foreground/60">{submenu.title}</span>
-                                                                    </div>
-                                                                )
-                                                            )
-                                                        ))}
-                                                    </div>
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        ) : (
-                                            <NavLink
-                                                key={index}
-                                                to={menu.to ?? ""}
-                                                onClick={() => setOpen(false)}
-                                                className={({ isActive }) => cn(
-                                                    "py-1 text-sm font-medium transition-colors hover:text-primary",
-                                                    isActive ? "text-foreground" : "text-foreground/60"
-                                                )}>
-                                                {menu.title}
-                                            </NavLink>
-                                        )
-                                    )}
-                                </div>
-                            </Accordion>
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet> */}
-
-                <a href="/" className="mr-6 flex items-center space-x-2 md:hidden">
-                    <Icons.logo className="h-6 w-6" />
-                    <span className="font-bold inline-block">{appConfig.name}</span>
-                </a>
+                {/* <span className="font-bold inline-block">{appConfig.name}</span> */}
                 {/* right */}
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
                     <div className="w-64 flex items-center gap-2">
@@ -164,16 +85,16 @@ export function Header() {
                             placeholder="Cari Nama Tempat..."
                             className="rounded-full h-10"
                             trailing={
-                                <Button variant="destructive" className="bg-primary rounded-full w-[32px] h-[32px] hover:bg-primary" size="icon">
-                                    <Icon icon="mdi:magnify" width="20" />
+                                <Button variant="destructive" className="bg-primary rounded-full dark:bg-primary-foreground w-[32px] h-[32px] hover:bg-primary" size="icon">
+                                    <Icon icon="mdi:magnify" className="dark:text-white" width="20" />
                                 </Button>
                             }
                         />
                     </div>
                     <div>
                         <Popover>
-                            <PopoverTrigger>  <Button variant="destructive" className="bg-primary rounded-full w-[30px] h-[30px] hover:bg-primary" size="icon">
-                                <Icon icon="mdi:filter" width="20" />
+                            <PopoverTrigger>  <Button variant="destructive" className="bg-primary dark:bg-primary-foreground rounded-full w-[30px] h-[30px] hover:bg-primary" size="icon">
+                                <Icon icon="mdi:filter" className="dark:text-white" width="20" />
                             </Button></PopoverTrigger>
                             <PopoverContent align="end" className='w-80'>
                                 <div>
@@ -187,10 +108,10 @@ export function Header() {
                                         placeholder="Pilih Fasilitas"
                                     />
                                     <div className="flex justify-between mt-2 gap-2">
-                                        <Button variant="destructive" className="bg-white ring-1 ring-primary rounded-full w-full h-[30px] hover:bg-white mt-2 text-primary" size="icon">
+                                        <Button variant="destructive" className="bg-white ring-1 ring-primary dark:bg-primary-foreground rounded-full w-full h-[30px] hover:bg-white mt-2 text-primary" size="icon">
                                             Reset
                                         </Button>
-                                        <Button variant="destructive" className="bg-primary rounded-full w-full h-[30px] hover:bg-primary mt-2" size="icon">
+                                        <Button variant="destructive" className="bg-primary rounded-full w-full dark:bg-primary-foreground h-[30px] hover:bg-primary mt-2" size="icon">
                                             Cari
                                         </Button>
                                     </div>
@@ -198,7 +119,7 @@ export function Header() {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <nav className="flex items-center space-x-2">
+                    <nav className=" items-center space-x-2 hidden md:flex">
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="flex gap-4 px-4 py-4 h-10 ring-1 ring-[#ddd] items-center justify-center rounded-full">
@@ -256,7 +177,7 @@ export function Header() {
                                             Masuk
                                         </Button>
                                     </DropdownMenuItem>
-                                            <p className="text-xs text-center font-semibold text-neutral-500">atau</p>
+                                    <p className="text-xs text-center font-semibold text-neutral-500">atau</p>
                                     <DropdownMenuItem>
                                         <Button variant="destructive" className={cn(buttonVariants({ variant: "outline" }), "rounded-xl bg-primary hover:bg-primary/90 text-white hover:text-white w-full h-8 px-4")} size="icon"
                                             onClick={() => {
@@ -265,21 +186,159 @@ export function Header() {
                                             Daftar
                                         </Button>
                                     </DropdownMenuItem>
-                                    {/* <DropdownMenuItem onClick={
-                                        () => {
-                                            localStorage.removeItem('token')
-                                            localStorage.removeItem('user')
-                                            window.location.href = '/auth/login'
-                                        }
-                                    }>Log out</DropdownMenuItem> */}
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
                         )}
-                        <ModeToggle />
+                        <div className="hidden md:block ">
+                            <ModeToggle />
+                        </div>
+                    </nav>
+                    <nav className="flex items-center space-x-2 md:hidden">
+                        <Sheet open={open} onOpenChange={setOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                    <Avatar className="h-8 w-8 capitalize">
+                                        <AvatarFallback>{user ? user.short_name : "?"}</AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="pr-0 sm:max-w-xs">
+                                <div className="px-4 pt-4 pb-2">
+                                    <NavLink to="/" onClick={() => setOpen(false)} className="flex items-center space-x-2">
+                                        <Logo withText />
+                                    </NavLink>
+                                </div>
+
+                                <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-8 pl-6">
+                                    {/* Menu utama */}
+                                    <Accordion
+                                        type="single"
+                                        collapsible
+                                        className="w-full"
+                                        defaultValue={
+                                            "item-" +
+                                            mainMenu.findIndex((item) =>
+                                                item.items !== undefined
+                                                    ? item.items
+                                                        .filter((subitem) => subitem.to !== undefined)
+                                                        .map((subitem) => subitem.to)
+                                                        .includes(location.pathname)
+                                                    : false
+                                            )
+                                        }
+                                    >
+                                        <div className="flex flex-col space-y-3">
+                                            {mainMenu.map((menu, index) =>
+                                                menu.items !== undefined ? (
+                                                    <AccordionItem key={index} value={`item-${index}`} className="border-b-0 pr-6">
+                                                        <AccordionTrigger
+                                                            className={cn(
+                                                                "py-1 hover:no-underline hover:text-primary [&[data-state=open]]:text-primary",
+                                                                menu.items
+                                                                    .filter((subitem) => subitem.to !== undefined)
+                                                                    .map((subitem) => subitem.to)
+                                                                    .includes(location.pathname)
+                                                                    ? "text-foreground"
+                                                                    : "text-foreground/60"
+                                                            )}
+                                                        >
+                                                            <div className="flex">{menu.title}</div>
+                                                        </AccordionTrigger>
+                                                        <AccordionContent className="pb-1 pl-4">
+                                                            <div className="mt-1">
+                                                                {menu.items.map((submenu, subindex) =>
+                                                                    submenu.to !== undefined ? (
+                                                                        <NavLink
+                                                                            key={subindex}
+                                                                            to={submenu.to}
+                                                                            onClick={() => setOpen(false)}
+                                                                            className={({ isActive }) =>
+                                                                                cn(
+                                                                                    "block justify-start py-1 h-auto font-normal hover:text-primary",
+                                                                                    isActive ? "text-foreground" : "text-foreground/60"
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {submenu.title}
+                                                                        </NavLink>
+                                                                    ) : submenu.label !== "" ? null : (
+                                                                        <div className="px-3">
+                                                                            <span className="text-sm font-medium text-foreground/60">
+                                                                                {submenu.title}
+                                                                            </span>
+                                                                        </div>
+                                                                    )
+                                                                )}
+                                                            </div>
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                ) : (
+                                                    <NavLink
+                                                        key={index}
+                                                        to={menu.to ?? ""}
+                                                        onClick={() => setOpen(false)}
+                                                        className={({ isActive }) =>
+                                                            cn(
+                                                                "py-1 text-sm font-medium transition-colors hover:text-primary",
+                                                                isActive ? "text-foreground" : "text-foreground/60"
+                                                            )
+                                                        }
+                                                    >
+                                                        {menu.title}
+                                                    </NavLink>
+                                                )
+                                            )}
+                                        </div>
+                                    </Accordion>
+
+                                    {/* Toggle theme */}
+                                    <div className="mt-6">
+                                        <ModeToggle />
+                                    </div>
+
+                                    {/* User login/logout area */}
+                                    <div className="mt-6 pr-6">
+                                        {user ? (
+                                            <>
+                                                <div className="text-sm font-medium text-foreground mb-1">{user.nama}</div>
+                                                <p className="text-xs text-muted-foreground mb-2">{user.email}</p>
+                                                <Button
+                                                    variant="destructive"
+                                                    className="w-full h-8 text-white"
+                                                    onClick={() => {
+                                                        logout()
+                                                        window.location.reload()
+                                                    }}
+                                                >
+                                                    Log out
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="text-sm font-medium text-foreground mb-1">Anda belum login</div>
+                                                <div className="flex flex-col gap-2">
+                                                    <Button
+                                                        className="rounded-xl bg-primary hover:bg-primary/90 text-white w-full h-8 px-4"
+                                                        onClick={() => (window.location.href = "/auth/login")}
+                                                    >
+                                                        Masuk
+                                                    </Button>
+                                                    <Button
+                                                        className="rounded-xl bg-primary hover:bg-primary/90 text-white w-full h-8 px-4"
+                                                        onClick={() => (window.location.href = "/auth/register")}
+                                                    >
+                                                        Daftar
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </ScrollArea>
+                            </SheetContent>
+                        </Sheet>
                     </nav>
                 </div>
-
             </div>
         </header>
     )
