@@ -2,8 +2,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from "@/assets/image/logo/logo.png";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { getDetailProfil } from "@/api/profil";
+import { useEffect } from "react";
 
 export default function Profil() {
+
+  const loadProfile = async () => {
+    const res = await getDetailProfil();
+    console.log(res);
+  }
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between">

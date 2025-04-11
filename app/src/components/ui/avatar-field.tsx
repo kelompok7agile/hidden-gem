@@ -1,26 +1,39 @@
 import React, { useState, useEffect } from "react";
 
 interface AvatarFieldProps {
-  initialImage?: string; // Nilai awal untuk gambar
+  initialValue?: File; // Initial value as a File object
+  onFileChange?: (file: File | null) => void; // Callback for file change
 }
 
-const AvatarField: React.FC<AvatarFieldProps> = ({ initialImage }) => {
+const AvatarField: React.FC<AvatarFieldProps> = ({ initialValue, onFileChange }) => {
   const [image, setImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialImage) {
-      setImage(initialImage); // Set nilai awal jika diberikan
+    if (initialValue) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result as string); // Convert File to base64 string
+      };
+      reader.readAsDataURL(initialValue);
     }
-  }, [initialImage]);
+  }, [initialValue]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setImage(reader.result as string);
+        setImage(reader.result as string); // Convert File to base64 string
+        if (onFileChange) {
+          onFileChange(file); // Trigger the callback with the selected file
+        }
       };
       reader.readAsDataURL(file);
+    } else {
+      setImage(null);
+      if (onFileChange) {
+        onFileChange(null); // Trigger the callback with null if no file is selected
+      }
     }
   };
 
@@ -51,7 +64,12 @@ const AvatarField: React.FC<AvatarFieldProps> = ({ initialImage }) => {
       </div>
       {image && (
         <button
-          onClick={() => setImage(null)}
+          onClick={() => {
+            setImage(null); // Clear the image
+            if (onFileChange) {
+              onFileChange(null); // Trigger the callback with null
+            }
+          }}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Remove
