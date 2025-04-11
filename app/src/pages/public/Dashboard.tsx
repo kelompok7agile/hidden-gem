@@ -90,10 +90,10 @@ export default function Dashboard() {
             <PageHeader>
                 <div className="mx-auto text-center flex items-center justify-center gap-4">
                     {
-                        categories.map((category) => (
+                        categories.map((category, index) => (
                             <div
                                 onClick={() => handleCategoryClick(category.value)}
-                                key={category.value}
+                                key={index}
                                 className={`flex flex-col hover:bg-primary/10 items-center p-3 rounded-lg cursor-pointer ${tabActive === category.value ? 'text-primary' : 'text-gray-500'}`}
                             >
                                 <Icon icon={category.icon} width={50} height={50} className={`${tabActive === category.value ? 'text-primary' : 'text-gray-400'}`} />
@@ -104,11 +104,11 @@ export default function Dashboard() {
                 </div>
             </PageHeader>
             <div>
-                {data?.pages.map((page, index) => (
+                {data?.pages.map((page) => (
                     <div className="grid gap-x-2 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {page.data.data.map((place: any) => (
+                        {page.data.data.map((place: any, i: number) => (
                             <div
-                                key={index}
+                                key={i}
                                 className="w-full p-2 rounded-2xl hover:bg-white dark:hover:bg-gray-800 cursor-pointer transition duration-500 ease-in-out intro-y"
                                 onClick={() => navigate(`/hidden-gem/${place.tempat_id}`)}
                             >
