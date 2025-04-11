@@ -149,9 +149,11 @@ const getAllTempat = async ({
         : 0;
 
     const kategori = (tempat.list_kategori_tempat_id || "")
-      .split(",")
-      .map((id) => kategoriMap[id.trim()])
-      .filter(Boolean);
+        .split(",")
+        .map((id) => kategoriMap[id.trim()])
+        .filter(Boolean)
+        .join(", ");
+      
 
     const fasilitas = (tempat.list_fasilitas_id || "")
       .split(",")
@@ -230,7 +232,7 @@ const getTempatById = async (id) => {
         filename || ""
       );
       const fileExists = filename && fs.existsSync(filePath);
-      return fileExists ? `${BASE_URL}/dokumen/${filename}` : null;
+      return fileExists ? `${process.env.API_BASE_URL}/dokumen/${filename}` : null;
     };
 
     if (fotoError) throw fotoError;
@@ -240,16 +242,31 @@ const getTempatById = async (id) => {
       .filter(Boolean);
 
     const galery = fotoData
-      .filter((foto) => foto.user?.user_group_id !== "02")
+      .filter((foto) => foto.user?.user_group_id === "02")
       .map((f) => buildFotoUrl(f.foto))
       .filter(Boolean);
 
+    const ratingData = await supabase
+      .from("rating")
+      .select("rating")
+      .eq("tempat_id", id);
+
+    const ratings = ratingData.data || [];
+
+    const avgRating =
+      ratings.length > 0
+        ? parseFloat(
+            (ratings.reduce((a, b) => a + b.rating, 0) / ratings.length).toFixed(2)
+          )
+        : 0;
+
     return {
       ...tempat,
-      kategori: kategori.map((item) => item.nama),
+      kategori: kategori.map((item) => item.nama).join(", "),
       fasilitas: fasilitas.map((item) => item.nama),
       foto: [...detail_foto, ...galery],
       jam_operasional: convertJamOperasional(tempat.jam_operasional),
+      rating_count: avgRating,
     };
   } catch (error) {
     console.error("Kesalahan saat mengambil detail tempat:", error.message);
