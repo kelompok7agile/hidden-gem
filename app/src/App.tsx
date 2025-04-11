@@ -6,7 +6,13 @@ import { queryClient } from "../src/lib/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './contexts/AuthContext';
+import { useEffect } from "react";
+import { useTheme } from "next-themes";
 export default function App() {
+    const { setTheme } = useTheme();
+    useEffect(() => {
+        setTheme("light"); // ini akan auto set ke light mode
+      }, []);
     return (
         <AuthProvider>
             <QueryClientProvider client={queryClient}>
