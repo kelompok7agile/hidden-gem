@@ -21,8 +21,14 @@ export const useLogin = () => {
             localStorage.setItem('user', JSON.stringify(data));
             console.log('Login sukses:', data);
             toast.success('Login berhasil');
-            navigate('/app');
-            window.location.reload(); // Reload the page to apply the token
+            console.log(data, 'data')
+
+            if(data?.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/app');
+            }
+            window.location.reload();
         },
         onError: (err) => {
             console.log(err, 'err')
