@@ -34,7 +34,14 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  res.set(defaultHeaders);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   try {
     if(!email || !password || email === "" || password === "") {
       return res.status(400).json({
