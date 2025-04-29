@@ -3,7 +3,6 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
-const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes.js");
 const adminRoutes = require("./routes/adminRoutes");
 const tempatRoutes = require("./routes/tempatRoutes.js");
@@ -12,12 +11,12 @@ const reviewRoutes = require("./routes/reviewRoutes.js");
 
 const app = express();
 
-
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/dokumen", express.static(path.join(__dirname, "../uploads/dokumen")));
+
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/tempat", tempatRoutes);
@@ -50,6 +49,12 @@ app.get("/api/image/user/:filename", (req, res) => {
       console.log("File sent:", filename);
     }
   });
+});
+
+// Optional: Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 module.exports = app;
