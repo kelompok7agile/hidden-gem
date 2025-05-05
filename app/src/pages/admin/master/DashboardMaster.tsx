@@ -45,7 +45,7 @@ const DashboardMaster = () => {
                     </div>
                 ))}
             </div>
-            <div className='col-span-9 rounded-lg ring-1'>
+            <div className='col-span-9 rounded-lg'>
                 {SelectedComponent ? <SelectedComponent /> : <div className='flex items-center justify-center h-full'>404 Not Found</div>}
             </div>
         </div>
