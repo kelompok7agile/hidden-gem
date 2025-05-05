@@ -45,14 +45,31 @@ const getManajemenUser = async (req, res) => {
 };
 
 const getAllKategoriTempat = async (req, res) => {
+  console.log("req.query", req.query);
   try {
-    const kategori = await kategoriTempatService.getAllKategoriTempat();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const cari = req.query.cari || null;
+    const sort = req.query.sort || "kategori_tempat_id.asc";
 
-    res.status(200).json({
-      success: true,
-      message: "Berhasil mengambil data kategori tempat",
-      data: kategori,
-    });
+    const { data, total_data } =
+      await kategoriTempatService.getAllKategoriTempat({
+        page,
+        limit,
+        cari,
+        sort,
+      });
+
+    const total_halaman = Math.ceil(total_data / limit);
+
+    res.status(200).json(
+      formatPaginatedMessage("Berhasil mengambil data kategori tempat", data, {
+        page,
+        limit,
+        total_data,
+        total_halaman,
+      })
+    );
   } catch (error) {
     console.error("Gagal mengambil kategori tempat:", error.message);
     res.status(500).json({
@@ -163,7 +180,7 @@ const getAllFasilitas = async (req, res) => {
       message: "Gagal mengambil data fasilitas",
     });
   }
-}
+};
 
 const updateFasilitas = async (req, res) => {
   try {
