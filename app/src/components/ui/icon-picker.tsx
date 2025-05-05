@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import { useDebounce } from 'use-debounce';
 import { Input } from './input';
-import { Button } from './button';
 
-const ALLOWED_ICON_PACKS = ['mdi', 'fa', 'tabler', 'ic', 'twemoji', 'ri', 'ph', 'bx', 'fluent', 'ci', 'gg', 'akar-icons', 'basil', 'bxs', 'cuida', 'famicons', 'uil', 'mi', 'mdi-light', 'tdesign', 'ri', 'stash'];
+const ALLOWED_ICON_PACKS = [
+    'mdi', 'fa', 'tabler', 'ic', 'twemoji', 'ri', 'ph', 'bx', 'fluent', 'ci', 'gg', 'akar-icons', 'basil',
+    'bxs', 'cuida', 'famicons', 'uil', 'mi', 'mdi-light', 'tdesign', 'ri', 'stash', 'material-symbols', 'hugeicons', 'solar',
+];
 
 type IconPickerProps = {
     value: string | null;
@@ -20,12 +21,11 @@ export default function IconPicker({
     limit = 60,
 }: IconPickerProps) {
     const [query, setQuery] = useState('');
-    const [debouncedQuery] = useDebounce(query, 500);
     const [icons, setIcons] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
 
     const fetchIcons = async (search: string) => {
+        if (loading) return; // Prevent multiple requests while loading
         setLoading(true);
         try {
             const res = await fetch(`https://api.iconify.design/search?query=${search}`);
@@ -41,36 +41,24 @@ export default function IconPicker({
         }
     };
 
-    const fetchRandomIcons = async () => {
-        setLoading(true);
-        try {
-            const allIcons: string[] = [];
-            for (const prefix of ALLOWED_ICON_PACKS) {
-                const resIcons = await fetch(`https://api.iconify.design/collection?prefix=${prefix}&search=all`);
-                const packData = await resIcons.json();
-                const names = packData.icons || [];
-                const randomIcons = names
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, limit)
-                    .map((name: string) => `${prefix}:${name}`);
-                allIcons.push(...randomIcons);
-            }
-
-            setIcons(allIcons.slice(0, limit));
-        } catch (error) {
-            console.error('Error fetching random icons:', error);
-        } finally {
-            setLoading(false);
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && query.trim() !== '') {
+            fetchIcons(query.trim());
         }
     };
 
     useEffect(() => {
-        if (debouncedQuery.trim() !== '') {
-            fetchIcons(debouncedQuery.trim());
-        } else {
-            fetchRandomIcons();
+        if(value && value !== '' && value !== null) {
+            const iconPack = value.split(':')[0];
+            if (ALLOWED_ICON_PACKS.includes(iconPack)) {
+                setIcons([value]);
+                fetchIcons(value.split(':')[1]);
+            } else {
+                setIcons([]);
+            }
         }
-    }, [debouncedQuery]);
+    }, [])
+
 
     return (
         <div className="p-2 w-full max-w-xl mx-auto ring-1 ring-[#eee] rounded-lg bg-gray-50 shadow-sm">
@@ -98,6 +86,7 @@ export default function IconPicker({
                     className="w-full px-4 py-2 border rounded-lg bg-white mt-2"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onKeyUp={handleKeyUp} // Trigger search only on Enter key
                 />
             )}
 
