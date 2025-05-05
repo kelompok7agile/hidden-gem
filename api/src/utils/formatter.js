@@ -20,22 +20,27 @@ const formatMessage = (message, data = null, code = 200) => {
  * @param {object} pagination - Informasi pagination
  * @param {number} pagination.page - Halaman saat ini
  * @param {number} pagination.limit - Jumlah item per halaman
- * @param {number} pagination.totalItems - Total jumlah item
- * @param {number} pagination.totalPages - Total jumlah halaman
+ * @param {number} pagination.total_data - Total jumlah item
+ * @param {number} pagination.total_halaman - Total jumlah halaman
  * @param {number} code - Kode status HTTP (default: 200)
  * @returns {object} - Respons terformat dengan pagination
  */
-const formatPaginatedMessage = (message, data = [], pagination = {}, code = 200) => {
+const formatPaginatedMessage = (
+  message,
+  data = [],
+  pagination = {},
+  code = 200
+) => {
   return {
-    message,
     code,
-    data,
-    pagination: {
-      page: pagination.page || 1,
+    data: {
+      ...data,
       limit: pagination.limit || 10,
-      totalItems: pagination.totalItems || 0,
-      totalPages: pagination.totalPages || 0,
+      page: pagination.page || 1,
+      total_data: pagination.total_data || 0,
+      total_halaman: pagination.total_halaman || 0,
     },
+    message,
   };
 };
 
