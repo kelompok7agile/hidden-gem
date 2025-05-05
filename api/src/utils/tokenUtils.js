@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 
 const generateResetToken = (email) => {
     const secret = process.env.JWT_SECRET;
-    const expiresIn = "1h";
+    // set the expiration time to unlimited for the reset token
+    const expiresIn = "30d"; // 1 hour expiration time
     return jwt.sign({email}, secret, {expiresIn});
 };
 
