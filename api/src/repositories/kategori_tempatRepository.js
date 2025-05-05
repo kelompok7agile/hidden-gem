@@ -12,15 +12,48 @@ const findByNama = async (nama) => {
   return data;
 };
 
-const getAll = async () => {
-  const { data, error } = await supabase
-    .from("kategori_tempat")
-    .select("kategori_tempat_id, nama, icon")
-    .order("kategori_tempat_id", { ascending: true });
+const getAll = async ({
+  page = 1,
+  limit = 10,
+  cari = null,
+  sort = "kategori_tempat_id.asc",
+}) => {
+  const offset = (page - 1) * limit;
+
+  let query = supabase.from("kategori_tempat").select("*", { count: "exact" });
+
+  if (cari) {
+    query = query.ilike("nama", `%${cari}%`);
+  }
+
+  if (sort) {
+    const [column, order] = sort.split(".");
+    query = query.order(column, { ascending: order === "asc" });
+  }
+
+  const { data, error, count } = await query.range(offset, offset + limit - 1);
+
+  console.log('data', data);
+  console.log('cari', cari);
 
   if (error) throw error;
 
-  return data;
+  return {
+    data,
+    total_data: count,
+  };
+};
+
+const countAll = async () => {
+  const { count, error } = await supabase
+    .from("kategori_tempat")
+    .select("*", { count: "exact" });
+
+  console.log("count", count);
+
+  if (error) throw error;
+
+  return count;
 };
 
 const update = async (id, updateData) => {
@@ -61,4 +94,5 @@ module.exports = {
   deleteData,
   insert,
   findByNama,
+  countAll,
 };
