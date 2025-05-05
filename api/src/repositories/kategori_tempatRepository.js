@@ -13,12 +13,9 @@ const findByNama = async (nama) => {
 };
 
 const getAll = async ({
-  page = 1,
-  limit = 10,
   cari = null,
   sort = "kategori_tempat_id.asc",
 }) => {
-  const offset = (page - 1) * limit;
 
   let query = supabase.from("kategori_tempat").select("*", { count: "exact" });
 
@@ -31,16 +28,12 @@ const getAll = async ({
     query = query.order(column, { ascending: order === "asc" });
   }
 
-  const { data, error, count } = await query.range(offset, offset + limit - 1);
-
-  console.log('data', data);
-  console.log('cari', cari);
+  const { data, count, error } = await query;
 
   if (error) throw error;
 
   return {
-    data,
-    total_data: count,
+    data
   };
 };
 

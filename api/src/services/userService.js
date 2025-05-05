@@ -28,14 +28,12 @@ const register = async (userData) => {
       user_group_id = "02",
     } = userData;
 
-    const existingUser = await userRepository.findUserByEmail(email); //pengecekan email
+    const existingUser = await userRepository.findUserByEmail(email);
     if (existingUser) {
       return new Error("Email sudah terdaftar");
     }
-    // Hash password menggunakan fungsi dari utils
     const { hashedPassword, salt } = await hashPassword(password);
 
-    // Buat user baru
     const createUser = await userRepository.createUser({
       nama,
       email,
@@ -54,7 +52,6 @@ const register = async (userData) => {
       throw new Error("User tidak ditemukan setelah pendaftaran");
     }
     const { new_password, salt_password, ...other } = user;
-    console.log("newUser: ", other);
     return other;
   } catch (error) {
     throw error;

@@ -26,7 +26,6 @@ app.use("/review", reviewRoutes);
 app.get("/api/image/tempat/:filename", (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, "../uploads", "dokumen", filename);
-  console.log(filePath);
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error("Error sending file:", err);
@@ -40,7 +39,6 @@ app.get("/api/image/tempat/:filename", (req, res) => {
 app.get("/api/image/user/:filename", (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, "../uploads", "dokumen", filename);
-  console.log(filePath);
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error("Error sending file:", err);
@@ -51,7 +49,6 @@ app.get("/api/image/user/:filename", (req, res) => {
   });
 });
 
-// Optional: Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');

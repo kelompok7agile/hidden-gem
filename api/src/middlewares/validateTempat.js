@@ -3,7 +3,7 @@ const validateTempat = (req, res, next) => {
 
   if (!nama || !alamat || !jam_operasional || !list_kategori_tempat_id) {
     return res.status(400).json({
-      success: false,
+      code: 500,
       message:
         "Field nama, alamat, jam_operasional, dan list_kategori_tempat_id wajib diisi",
     });
@@ -16,7 +16,7 @@ const validateTempat = (req, res, next) => {
     }
   } catch {
     return res.status(400).json({
-      success: false,
+      code: 500,
       message: "Format jam_operasional harus berupa JSON string valid",
     });
   }

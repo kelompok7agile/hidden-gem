@@ -2,9 +2,10 @@ const supabase = require("../config/database.js");
 const { findUserByEmail } = require("../repositories/userRepository.js");
 const { sendResetPassword } = require("../utils/emailUtils.js");
 const { formatMessage } = require("../utils/formatter.js");
-const { generateResetToken, verifyResetToken} = require("../utils/tokenUtils.js");
+const { generateResetToken, verifyResetToken, revokeToken} = require("../utils/tokenUtils.js");
+const { hashPassword, comparePassword } = require("../utils/hashPassword.js");
+require("dotenv").config();
 
-// memastikan email yang masuk untuk reset password adalah email terdaftar
 const requestResetPassword = async (req, res) => {
   const { email } = req.body;
   try {
@@ -14,9 +15,8 @@ const requestResetPassword = async (req, res) => {
         .status(404)
         .json(formatMessage("Email tidak terdaftar", null, 404));
     }
-    // generate reset token
     const resetToken = generateResetToken(email);
-    const resetLink = `https://your-app.com/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.APP_URL}/reset-password?token=${resetToken}`;
 
     const emailResult = await sendResetPassword(email, resetLink);
     if (!emailResult.success) {
@@ -41,28 +41,43 @@ const requestResetPassword = async (req, res) => {
   }
 };
 
-
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
-  // verifikasi token
-  const decoded = verifyResetToken(token);
+  
+  const decoded = await verifyResetToken(token);
+  
   if (!decoded) {
-    return res.status(400).json(formatMessage("Token tidak valid", null, 400));
+    return res.status(400).json(formatMessage("Token tidak valid atau telah dibatalkan", null, 400));
   }
 
   const { email } = decoded;
 
-  // update password di database
+  const { hashedPassword, salt } = await hashPassword(newPassword);
+
   const { error } = await supabase
     .from("user")
-    .update({ password: newPassword })
-    .eq("email: ", email);
+    .update({ password: hashedPassword, salt_password: salt })
+    .eq("email", email);
 
   if (error) {
-    return res.status(500).json(formatMessage("gagal mengganti password", null, 500));
+    return res.status(500).json(formatMessage("Gagal Mengubah password", null, 500));
   }
 
-  res.status(200).json(formatMessage("password berhasil diganti"));
+  await revokeToken(token);
+
+  res.status(200).json(formatMessage("Password berhasil diubah"));
 };
 
-module.exports = { requestResetPassword, resetPassword };
+const checkToken = async (req, res) => {
+  const { token } = req.query;
+
+  const decoded = await verifyResetToken(token);
+  
+  if (!decoded) {
+    return res.status(400).json(formatMessage("Token tidak valid atau telah dibatalkan", null, 400));
+  }
+
+  res.status(200).json(formatMessage("Token valid"));
+};
+
+module.exports = { requestResetPassword, resetPassword, checkToken };

@@ -15,9 +15,10 @@ const addReview = async (req, res) => {
 
 const getReviewsByTempatId = async (req, res) => {
     const { tempat_id } = req.params;
+    const { limit = 20, offset = 0 } = req.query;
 
     try {
-        const reviews = await reviewService.getReviewsByTempatId(tempat_id);
+        const reviews = await reviewService.getReviewsByTempatId(tempat_id, parseInt(limit), parseInt(offset));
         res.status(200).json(formatMessage("Data review berhasil diambil", reviews));
     } catch (error){
         console.error("Kesalahan saat mengambil data review:", error.message);

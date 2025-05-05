@@ -1,18 +1,11 @@
 const kategoriTempatRepository = require("../repositories/kategori_tempatRepository");
 
 const getAllKategoriTempat = async ({
-  page = 1,
-  limit = 10,
   cari = null,
   sort = "kategori_tempat_id.asc",
 }) => {
   try {
-    const offset = (page - 1) * limit;
-
-    // Ambil data dengan paginasi
     const data = await kategoriTempatRepository.getAll({
-      limit,
-      offset,
       cari,
       sort,
     });
@@ -20,11 +13,8 @@ const getAllKategoriTempat = async ({
       throw new Error("Gagal mengambil data kategori tempat");
     }
 
-    const total_data = await kategoriTempatRepository.countAll();
-
     return {
       data,
-      total_data,
     };
   } catch (error) {
     throw error;

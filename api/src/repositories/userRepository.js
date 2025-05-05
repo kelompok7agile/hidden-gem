@@ -174,7 +174,7 @@ const getOpsi = async (value) => {
     }
 
     data = data_value.map((item) => ({
-      id: item.fasilitas_id,
+      fasilitas_id: item.fasilitas_id,
       name: item.nama,
       icon: item.icon,
     }));
@@ -190,7 +190,7 @@ const getOpsi = async (value) => {
     }
 
     data = data_value.map((item) => ({
-      id: item.kategori_tempat_id,
+      kategori_tempat_id: item.kategori_tempat_id,
       name: item.nama,
       icon: item.icon,
     }));

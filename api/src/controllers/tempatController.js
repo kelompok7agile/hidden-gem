@@ -52,14 +52,16 @@ const compareTempat = async (req, res) => {
 
     const hasil = await tempatService.compareTempat(tempat1, tempat2);
 
+    console.log(hasil);
+
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Berhasil membandingkan tempat",
       data: hasil,
     });
   } catch (error) {
     console.error("Error saat membandingkan tempat:", error.message);
-    res.status(500).json({ success: false, message: "Gagal membandingkan tempat" });
+    res.status(500).json({ code: 500, message: "Gagal membandingkan tempat" });
   }
 };
 
@@ -69,7 +71,7 @@ const createTempat = async (req, res) => {
     const tempatBaru = await tempatService.createTempat(req.body, req.files, user_id);
 
     res.status(201).json({
-      success: true,
+      code: 200,
       message: "Tempat berhasil ditambahkan",
       data: tempatBaru,
     });
@@ -83,7 +85,7 @@ const createTempat = async (req, res) => {
         });
       }
     }
-    res.status(500).json({ success: false, message: "Gagal menambahkan tempat" });
+    res.status(500).json({ code: 500, message: "Gagal menambahkan tempat" });
   }
 };
 
@@ -98,7 +100,7 @@ const updateTempat = async (req, res) => {
     const tempat = await tempatService.updateTempat(tempat_id, req.body, req.files, user_id);
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Tempat berhasil diubah",
       data: tempat,
     });
@@ -113,7 +115,7 @@ const updateTempat = async (req, res) => {
     }
 
     console.error("Error saat mengubah tempat:", error.message);
-    res.status(500).json({ success: false, message: "Gagal mengubah tempat" });
+    res.status(500).json({ code: 500, message: "Gagal mengubah tempat" });
   }
 };
 
@@ -123,20 +125,20 @@ const hapusTempat = async (req, res) => {
     const user_id = req.user.user_id;
 
     if (!tempat_id) {
-      return res.status(400).json({ success: false, message: "tempat_id wajib diisi" });
+      return res.status(400).json({ code: 500, message: "tempat_id wajib diisi" });
     }
 
     const result = await tempatService.hapusTempat(tempat_id, user_id);
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Tempat berhasil dihapus",
       data: result
     });
   } catch (error) {
     console.error("Gagal menghapus tempat:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal menghapus tempat"
     });
   }
@@ -148,20 +150,20 @@ const uploadFotoTempat = async (req, res) => {
     const user_id = req.user.user_id;
 
     if (!tempat_id) {
-      return res.status(400).json({ success: false, message: "tempat_id wajib diisi" });
+      return res.status(400).json({ code: 500, message: "tempat_id wajib diisi" });
     }
 
     const result = await tempatService.uploadTempat(tempat_id, req.files, user_id);
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Foto berhasil diupload",
       data: result
     });
   } catch (error) {
     console.error("Gagal mengupload foto:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengupload foto"
     });
   }
