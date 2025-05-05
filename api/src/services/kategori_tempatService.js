@@ -1,14 +1,31 @@
 const kategoriTempatRepository = require("../repositories/kategori_tempatRepository");
 
-const getAllKategoriTempat = async () => {
+const getAllKategoriTempat = async ({
+  page = 1,
+  limit = 10,
+  cari = null,
+  sort = "kategori_tempat_id.asc",
+}) => {
   try {
-    const kategori = await kategoriTempatRepository.getAll();
+    const offset = (page - 1) * limit;
 
-    if (!kategori || kategori.length === 0) {
-      throw new Error("Tidak ada data kategori tempat yang ditemukan");
+    // Ambil data dengan paginasi
+    const data = await kategoriTempatRepository.getAll({
+      limit,
+      offset,
+      cari,
+      sort,
+    });
+    if (!data) {
+      throw new Error("Gagal mengambil data kategori tempat");
     }
 
-    return kategori;
+    const total_data = await kategoriTempatRepository.countAll();
+
+    return {
+      data,
+      total_data,
+    };
   } catch (error) {
     throw error;
   }
@@ -30,19 +47,18 @@ const deleteKategoriTempat = async (id) => {
 };
 
 const tambahKategoriTempat = async ({ nama }) => {
-    const existing = await kategoriTempatRepository.findByNama(nama);
-    if (existing) {
-      throw new Error("Nama kategori sudah terdaftar");
-    }
-  
-    const kategori = await kategoriTempatRepository.insert({ nama });
-    return kategori;
-  };
-  
+  const existing = await kategoriTempatRepository.findByNama(nama);
+  if (existing) {
+    throw new Error("Nama kategori sudah terdaftar");
+  }
+
+  const kategori = await kategoriTempatRepository.insert({ nama });
+  return kategori;
+};
 
 module.exports = {
   getAllKategoriTempat,
   updateKategoriTempat,
   deleteKategoriTempat,
-    tambahKategoriTempat
+  tambahKategoriTempat,
 };
