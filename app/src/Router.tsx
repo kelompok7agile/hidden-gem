@@ -11,6 +11,7 @@ import Profil from "./pages/public/profil";
 import FormProfil from "./pages/public/profil/form";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
+import DetailTempat from "./pages/public/DetailTempat";
 
 export const router = createBrowserRouter([
   {
@@ -35,8 +36,8 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "sample",
-        element: <Sample />,
+        path: "detail-tempat",
+        element: <DetailTempat />,
       },
       {
         path: "empty",
