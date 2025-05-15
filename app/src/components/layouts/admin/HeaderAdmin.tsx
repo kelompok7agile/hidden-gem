@@ -56,7 +56,7 @@ export function Header() {
             <div className="container px-4 md:px-8 flex h-24 items-center ">
                 <div className="mr-4 hidden md:flex items-center justify-between space-x-2 ">
                     {/* desktop */}
-                    <NavLink to="/" className="mr-6 flex items-center space-x-2">
+                    <NavLink to="/admin/" className="mr-6 flex items-center space-x-2">
                         <Logo />
                     </NavLink>
                     <nav className="flex items-center space-x-6 text-sm font-medium">
