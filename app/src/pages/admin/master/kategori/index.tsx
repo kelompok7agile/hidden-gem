@@ -7,6 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { toast } from 'sonner';
 
 import {
     Dialog,
@@ -87,21 +88,48 @@ const index = () => {
     const handleSubmit = async () => {
         console.log('clicked', form);
         if (dialog.jenis === 'tambah') {
-            await create({ nama: form.name, icon: form.icon });
+            await create?.mutate({ nama: form.name, icon: form.icon });
+            if (create.isSuccess) {
+                toast.success('Data berhasil ditambahkan');
+            } else if (create.isError) {
+                toast.error('Data gagal ditambahkan');
+            }
         } else if (dialog.jenis === 'ubah') {
             if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
-                await update({
+                await update?.mutate({
                     id: form.kategori_tempat_id, payload: {
-                        nama: form.name, 
-                        icon: form.icon, 
+                        nama: form.name,
+                        icon: form.icon,
                         kategori_tempat_id: form.kategori_tempat_id
                     }
                 });
+                if (update.isSuccess) {
+                    toast.success('Data berhasil diubah');
+                } else if (update.isError) {
+                    toast.error('Data gagal diubah');
+                }
             } else {
-                console.error("kategori_tempat_id is null or undefined");
+                toast.error("kategori_tempat_id is null or undefined");
+            }
+        } else {
+            console.log('delete', form);
+            if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
+                console.log('delete if', form);
+                await remove?.mutate(form.kategori_tempat_id);
+
+                if (remove.isSuccess) {
+                    toast.success('Data berhasil dihapus');
+                } else if (remove.isError) {
+                    toast.error('Data gagal dihapus');
+                }
+            } else {
+                toast.error("kategori_tempat_id is null or undefined");
             }
         }
-        closeDialog()
+        setTimeout(() => {
+            closeDialog()
+            fetchNextPage();
+        }, 3000);
     }
 
     useEffect(() => {
@@ -119,35 +147,38 @@ const index = () => {
                             {dialog.jenis} {master}
                         </DialogTitle>
                     </DialogHeader>
-                    <div>
-                        <div className='mb-4'>
-                            <Label htmlFor="name">Nama</Label>
-                            <Input
-                                id="name"
-                                placeholder={`Masukkan nama ${master}`}
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                autoComplete="off"
-                                autoFocus
-                                disabled={isLoading}
-                            />
-                        </div>
-                        <div className='mb-4'>
-                            <Label htmlFor="icon">Icon</Label>
-                            <IconPicker
-                                value={form.icon}
-                                onChange={handleChange}
-                                showSearch={true}
-                                limit={60}
-                            />
-                        </div>
-                    </div>
+                    {dialog.jenis === 'hapus' ? (<div>
+                        Tindakan ini tidak dapat dibatalkan. Ini akan menghapus data secara permanen dari sistem kami.
+                    </div>)
+                        : (<div>
+                            <div className='mb-4'>
+                                <Label htmlFor="name">Nama</Label>
+                                <Input
+                                    id="name"
+                                    placeholder={`Masukkan nama ${master}`}
+                                    value={form.name}
+                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                    autoComplete="off"
+                                    autoFocus
+                                    disabled={isLoading}
+                                />
+                            </div>
+                            <div className='mb-4'>
+                                <Label htmlFor="icon">Icon</Label>
+                                <IconPicker
+                                    value={form.icon}
+                                    onChange={handleChange}
+                                    showSearch={true}
+                                    limit={60}
+                                />
+                            </div>
+                        </div>)}
                     <DialogFooter>
                         <div className="flex justify-center items-center gap-2 w-full">
                             <Button className='px-12 w-full' variant="outline" onClick={closeDialog}>Batal</Button>
                             <Button className='px-12 w-full' type="submit" onClick={handleSubmit}
                                 disabled={isLoading}>{
-                                    isLoading ? "Loading..." : dialog.jenis === 'tambah' ? "Simpan" : "Ubah"
+                                    isLoading ? "Loading..." : dialog.jenis === 'hapus' ? "Hapus" : dialog.jenis === 'tambah' ? "Simpan" : "Ubah"
                                 }</Button>
                         </div>
                     </DialogFooter>
@@ -183,7 +214,7 @@ const index = () => {
                                     <Button variant="outline" size="icon" onClick={() => showDialog('ubah', item)}>
                                         <Icon icon="ic:baseline-edit" width={20} height={20} className='text-[#ff961b]' />
                                     </Button>
-                                    <Button variant="outline" size="icon">
+                                    <Button variant="outline" size="icon" onClick={() => showDialog('hapus', item)}>
                                         <Icon icon="ic:baseline-delete" width={20} height={20} className='text-red-500' />
                                     </Button>
                                 </TableCell>
