@@ -1,12 +1,15 @@
 import axios from "@/lib/axios";
 
-export interface Pagination<T = any> {
-    data: T[];
-    total_halaman: number;
-    halaman_sekarang: number;
-    total_data: number;
-    limit: number;
-    page: number;
+export interface Pagination<T> {
+    code: number;
+    data: {
+        data: T[];
+        total_data: number;
+        limit: number;
+        page: number;
+        total_halaman: number;
+    };
+    message: string;
 }
 
 type Jenis = 'kategori-tempat' | string;
@@ -25,17 +28,17 @@ export const getMaster = async <T = any>({
 };
 
 export const createMaster = async (jenis: Jenis, payload: any) => {
-    const res = await axios.post(`admin/master-${jenis}`, payload);
+    const res = await axios.post(`admin/master-${jenis}/tambah`, payload);
     return res.data;
 };
 
 export const updateMaster = async (jenis: Jenis, id: number, payload: any) => {
-    const res = await axios.patch(`admin/master-${jenis}/${id}`, payload);
+    const res = await axios.post(`admin/master-${jenis}/ubah`, payload);
     return res.data;
 };
 
 export const deleteMaster = async (jenis: Jenis, id: number) => {
-    const res = await axios.delete(`admin/master-${jenis}/${id}`);
+    const res = await axios.post(`admin/master-${jenis}/hapus`);
     return res.data;
 };
 
