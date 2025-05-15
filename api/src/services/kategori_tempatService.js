@@ -36,13 +36,13 @@ const deleteKategoriTempat = async (id) => {
   return data;
 };
 
-const tambahKategoriTempat = async ({ nama }) => {
+const tambahKategoriTempat = async ({ nama, icon }) => {
   const existing = await kategoriTempatRepository.findByNama(nama);
   if (existing) {
     throw new Error("Nama kategori sudah terdaftar");
   }
 
-  const kategori = await kategoriTempatRepository.insert({ nama });
+  const kategori = await kategoriTempatRepository.insert({ nama, icon });
   return kategori;
 };
 
