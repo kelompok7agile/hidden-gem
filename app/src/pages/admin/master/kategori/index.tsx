@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Table,
     TableBody,
@@ -23,62 +23,28 @@ import { Input } from '@/components/ui/input'
 import IconPicker from '@/components/ui/icon-picker'
 import { useMaster } from '@/hooks/admin/useMaster'
 
-
-const kategoriTempat = [
-    {
-        "kategori_tempat_id": 8,
-        "nama": "Semua",
-        "icon": "material-symbols:select-all"
-    },
-    {
-        "kategori_tempat_id": 9,
-        "nama": "Vintage",
-        "icon": "hugeicons:vintage-clock"
-    },
-    {
-        "kategori_tempat_id": 10,
-        "nama": "Nature",
-        "icon": "material-symbols:nature-outline"
-    },
-    {
-        "kategori_tempat_id": 11,
-        "nama": "Minimalist",
-        "icon": "solar:box-minimalistic-broken"
-    },
-    {
-        "kategori_tempat_id": 12,
-        "nama": "Industrial",
-        "icon": "mdi:industrial"
-    },
-    {
-        "kategori_tempat_id": 13,
-        "nama": "Cozy",
-        "icon": "solar:home-outline"
-    }
-]
 const master = 'kategori'
 
 const index = () => {
     const {
-        data,
+        data: kategoriTempat = [],
         isLoading,
         fetchNextPage,
         hasNextPage,
         create,
         update,
         remove,
-    } = useMaster('kategori-tempat');
+    } = useMaster<Items>('kategori-tempat');
 
-    const kategoriTempat = data?.pages.flatMap(page => page.data) || []
 
     interface DialogState {
         open: boolean;
         jenis: string;
-        kategori_tempat_id: number[] | null;
+        kategori_tempat_id: number | null; // ubah dari array ke single number
     }
 
     interface FormState {
-        kategori_tempat_id: number[] | null;
+        kategori_tempat_id: number | null; // ubah dari array ke single number
         name: string;
         icon: string;
     }
@@ -107,8 +73,8 @@ const index = () => {
     }
 
     const showDialog = (jenis: string, data: Items) => {
-        setDialog({ open: true, jenis, kategori_tempat_id: [data.kategori_tempat_id] });
-        setForm({ ...form, kategori_tempat_id: [data.kategori_tempat_id], name: data.nama, icon: data.icon });
+        setDialog({ open: true, jenis, kategori_tempat_id: data.kategori_tempat_id });
+        setForm({ ...form, kategori_tempat_id: data.kategori_tempat_id, name: data.nama, icon: data.icon });
 
         console.log('form', form);
     }
@@ -123,14 +89,24 @@ const index = () => {
         if (dialog.jenis === 'tambah') {
             await create({ nama: form.name, icon: form.icon });
         } else if (dialog.jenis === 'ubah') {
-            if (form.kategori_tempat_id && form.kategori_tempat_id[0] !== undefined) {
-                await update({ id: form.kategori_tempat_id[0], payload: { nama: form.name, icon: form.icon } });
+            if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
+                await update({
+                    id: form.kategori_tempat_id, payload: {
+                        nama: form.name, 
+                        icon: form.icon, 
+                        kategori_tempat_id: form.kategori_tempat_id
+                    }
+                });
             } else {
                 console.error("kategori_tempat_id is null or undefined");
             }
         }
         closeDialog()
     }
+
+    useEffect(() => {
+        console.log('Form updated:', form);
+    }, [form]);
 
     return (
         <>
@@ -196,7 +172,7 @@ const index = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {kategoriTempat.map((item, index) => (
+                        {kategoriTempat.map((item: any, index: number) => (
                             <TableRow key={item.kategori_tempat_id}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{item.nama}</TableCell>
