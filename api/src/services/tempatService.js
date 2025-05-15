@@ -49,7 +49,7 @@ const getAllTempat = async (filters) => {
       data: [],
       total_data,
       total_page,
-      halaman_sekarang: parsedOffset,
+      halaman_sekarang: parsedOffset + 1,
     };
   }
 
@@ -57,7 +57,7 @@ const getAllTempat = async (filters) => {
     data,
     total_data,
     total_page,
-    halaman_sekarang: parsedOffset,
+    halaman_sekarang: parsedOffset + 1,
   };
 };
 
