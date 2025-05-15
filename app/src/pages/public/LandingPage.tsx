@@ -1,9 +1,19 @@
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function LandingPage() {
   var document = window.document;
+  const [open, setOpen] = useState(false)
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
   return (
     <>
       <header className="supports-backdrop-blur:bg-background/60 sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur">
@@ -13,10 +23,9 @@ export default function LandingPage() {
             <div className="mr-6 flex items-center space-x-2">
               <Logo />
             </div>
-            <nav className="flex items-center justify-end space-x-6 text-sm font-medium">
+            <nav className="md:items-center md:justify-start md:space-x-2 md:text-sm md:font-medium hidden md:flex">
               <Button
                 variant={"link"}
-                size={"lg"}
                 onClick={() => {
                   const fiturElement = document.getElementById("fitur");
                   if (fiturElement) {
@@ -28,7 +37,6 @@ export default function LandingPage() {
               </Button>
               <Button
                 variant={"link"}
-                size={"lg"}
                 onClick={() => {
                   const caraKerjaElement = document.getElementById("cara-kerja");
                   if (caraKerjaElement) {
@@ -40,7 +48,6 @@ export default function LandingPage() {
               </Button>
               <Button
                 variant={"link"}
-                size={"lg"}
                 onClick={() => {
                   const testimoniElement = document.getElementById("testimoni");
                   if (testimoniElement) {
@@ -56,6 +63,63 @@ export default function LandingPage() {
               }}>
                 <span>Login</span>
               </Button>
+            </nav>
+            {/* mobile */}
+            <nav className="flex items-center space-x-2 md:hidden">
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Icon icon="ci:hamburger-md" width="20" className="cursor-pointer text-black dark:text-white" />
+                </SheetTrigger>
+                <SheetContent side="right" className="pr-0 sm:max-w-xs">
+                  <div className="px-4 pt-4 pb-2">
+                    <NavLink to="/" onClick={() => setOpen(false)} className="flex items-center space-x-2">
+                      <Logo withText />
+                    </NavLink>
+                  </div>
+                  <ScrollArea className="h-full w-full flex flex-col items-center justify-start gap-2 px-4 py-2">
+                    <Button variant={"link"} className="w-fit text-left" onClick={() => {
+                      const fiturElement = document.getElementById("fitur");
+                      if (fiturElement) {
+                        fiturElement.scrollIntoView({ behavior: "smooth" });
+                      }
+                      setOpen(false);
+                    }}>
+                      Fitur
+                    </Button>
+                    <Button variant={"link"} className="w-fit text-left" onClick={() => {
+                      const caraKerjaElement = document.getElementById("cara-kerja");
+                      if (caraKerjaElement) {
+                        caraKerjaElement.scrollIntoView({ behavior: "smooth" });
+                      }
+                      setOpen(false);
+                    }
+                    }>
+                      Cara Kerja
+                    </Button>
+                    <Button variant={"link"} className="w-fit text-left" onClick={() => {
+                      const testimoniElement = document.getElementById("testimoni");
+                      if (testimoniElement) {
+                        testimoniElement.scrollIntoView({ behavior: "smooth" });
+                      }
+                      setOpen(false);
+                    }}>
+                      Testimoni
+                    </Button>
+                    <Button variant={"link"} className="w-fit text-center bg-primary text-white dark:bg-primary-foreground" onClick={() => {
+                      window.location.href = "/auth/login";
+                      setOpen(false);
+                    }}>
+                      Login
+                    </Button>
+                    <ModeToggle />
+                  </ScrollArea>
+
+                  {/* Toggle theme */}
+
+
+                  {/* User login/logout area */}
+                </SheetContent>
+              </Sheet>
             </nav>
           </div>
         </div>
@@ -95,8 +159,8 @@ export default function LandingPage() {
       </section>
 
 
-      <section id="fitur" className="py-20 bg-white">
-        <div className="container mx-auto px-6">
+      <section id="fitur" className="py-20 bg-white mx-auto">
+        <div className="container px-6 my-12 md:my-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               Kenapa Memilih Hidden Gem?
@@ -122,8 +186,6 @@ export default function LandingPage() {
                 Lokasi tersembunyi yang tidak akan kamu temukan di platform lain
               </p>
             </div>
-
-
             <div
               className="bg-secondary p-8 rounded-xl hover:shadow-md transition-all duration-300 animate-slide-up"
               style={{ animationDelay: '0.2s' }}
@@ -138,8 +200,6 @@ export default function LandingPage() {
                 Kafe dengan suasana tenang dan WiFi cepat untuk produktivitas
               </p>
             </div>
-
-
             <div
               className="bg-secondary p-8 rounded-xl hover:shadow-md transition-all duration-300 animate-slide-up"
               style={{ animationDelay: '0.4s' }}
@@ -159,8 +219,8 @@ export default function LandingPage() {
       </section>
 
 
-      <section id="cara-kerja" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
+      <section id="cara-kerja" className="py-20 bg-gray-50 mx-auto">
+        <div className="container px-6 my-12 md:my-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               Bagaimana Cara Kerjanya?
@@ -214,10 +274,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-
-      <section id="testimoni" className="py-20 bg-white">
-        <div className="container mx-auto px-6">
+      <section id="testimoni" className="py-20 bg-white mx-auto">
+        <div className="container px-6 my-12 md:my-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               Apa Kata Mereka?
@@ -314,8 +372,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-
       <section className="py-16 bg-primary text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
