@@ -1,23 +1,64 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient, QueryFunctionContext } from "@tanstack/react-query";
 import * as api from '../../api/admin/master';
 
-export const useMaster = (jenis: 'kategori-tempat' | 'kategori-artikel' | string) => {
-    const queryClient = useQueryClient();
 
+interface MasterResponse<T = any> {
+    code: number;
+    data: {
+        data: T[];
+        total_data: number;
+        limit: number;
+        page: number;
+        total_halaman: number;
+    };
+    message: string;
+}
+
+interface Items {
+    kategori_tempat_id: number;
+    nama: string;
+    icon: string;
+}
+
+interface MasterParams {
+    page?: number;
+    limit?: number;
+    search?: string;
+    // tambahkan filter lainnya sesuai kebutuhan
+}
+
+export const useMaster = <T extends Items = Items>(
+    jenis: 'kategori-tempat' | 'kategori-artikel' | string,
+    params?: MasterParams
+) => {
+    const queryClient = useQueryClient();
     // GET
-    const getQuery = useInfiniteQuery({
-        queryKey: ['master', jenis],
-        queryFn: ({ pageParam = 1 }) =>
-            api.getMaster({
-                jenis,
-                params: { page: pageParam, limit: 10 },
-            }),
+
+    const getQuery = useInfiniteQuery<MasterResponse<{ data: any[] }>, Error>({
+        queryKey: ['master', jenis, params],
+        queryFn: async ({ pageParam = 1, queryKey }) => {
+            const [, jenisParam, paramsParam] = queryKey as [string, string, MasterParams?];
+            return api.getMaster({
+                jenis: jenisParam,
+                params: {
+                    page: pageParam,
+                    limit: paramsParam?.limit || 10,
+                    search: paramsParam?.search || '',
+                },
+            });
+        },
         initialPageParam: 1,
         getNextPageParam: (lastPage) => {
-            const current = lastPage.halaman_sekarang;
-            const total = lastPage.total_halaman;
+            const current = lastPage.data.page;
+            const total = lastPage.data.total_halaman;
             return current < total ? current + 1 : undefined;
         },
+        select: (data) => ({
+            ...data,
+            // Flatten pages untuk akses mudah
+            flatData: data.pages.flatMap(page => page.data.data),
+            totalData: data.pages[0]?.data.total_data || 0,
+        }),
     });
 
     // CREATE
@@ -47,11 +88,21 @@ export const useMaster = (jenis: 'kategori-tempat' | 'kategori-artikel' | string
 
     return {
         ...getQuery,
+        data: getQuery.data?.pages.flatMap(page => page.data.data) || [],
+        pagination: {
+            page: getQuery.data?.pages[0]?.data.page || 1,
+            totalPages: getQuery.data?.pages[0]?.data.total_halaman || 1,
+            totalData: getQuery.data?.pages[0]?.data.total_data || 0,
+            limit: getQuery.data?.pages[0]?.data.limit || 10,
+        },
         create: createMutation.mutate,
         update: updateMutation.mutate,
         remove: deleteMutation.mutate,
-        createStatus: createMutation.status,
-        updateStatus: updateMutation.status,
-        removeStatus: deleteMutation.status,
+        // tambahkan refetch untuk memudahkan refresh dengan parameter baru
+        refetchWithParams: (newParams: MasterParams) => {
+            queryClient.invalidateQueries({
+                queryKey: ['master', jenis, newParams]
+            });
+        },
     };
 };
