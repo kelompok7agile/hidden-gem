@@ -84,6 +84,9 @@ export const useMaster = <T extends Items = Items>(
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['master', jenis] });
         },
+        onError: (error) => {
+            console.error('Delete error:', error);
+        },
     });
 
     return {
@@ -95,9 +98,9 @@ export const useMaster = <T extends Items = Items>(
             totalData: getQuery.data?.pages[0]?.data.total_data || 0,
             limit: getQuery.data?.pages[0]?.data.limit || 10,
         },
-        create: createMutation.mutate,
-        update: updateMutation.mutate,
-        remove: deleteMutation.mutate,
+        create: createMutation,
+        update: updateMutation,
+        remove: deleteMutation,
         // tambahkan refetch untuk memudahkan refresh dengan parameter baru
         refetchWithParams: (newParams: MasterParams) => {
             queryClient.invalidateQueries({
