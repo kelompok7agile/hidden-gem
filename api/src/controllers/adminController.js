@@ -69,18 +69,18 @@ const getAllKategoriTempat = async (req, res) => {
 
 const updateKategoriTempat = async (req, res) => {
   try {
-    const { kategori_tempat_id, nama } = req.body;
+    const { kategori_tempat_id, nama, icon } = req.body;
 
-    if (!kategori_tempat_id || !nama) {
+    if (!kategori_tempat_id || !nama || !icon) {
       return res.status(400).json({
         code: 500,
-        message: "Field 'kategori_tempat_id' dan 'nama' wajib diisi",
+        message: "Field 'kategori_tempat_id', 'nama', dan 'icon' wajib diisi",
       });
     }
 
     const updated = await kategoriTempatService.updateKategoriTempat(
       kategori_tempat_id,
-      { nama }
+      { nama, icon }
     );
 
     res.status(200).json({
@@ -128,16 +128,23 @@ const hapusKategoriTempat = async (req, res) => {
 
 const tambahKategoriTempat = async (req, res) => {
   try {
-    const { nama } = req.body;
+    const { nama, icon } = req.body;
 
-    if (!nama) {
+    if (!nama ) {
       return res.status(400).json({
         code: 500,
         message: "Field 'nama' wajib diisi",
       });
     }
 
-    const result = await kategoriTempatService.tambahKategoriTempat({ nama });
+    if(!icon) {
+      return res.status(400).json({
+        code: 500,
+        message: "Field 'icon' wajib diisi",
+      });
+    }
+
+    const result = await kategoriTempatService.tambahKategoriTempat({ nama, icon });
 
     res.status(201).json({
       code: 200,
