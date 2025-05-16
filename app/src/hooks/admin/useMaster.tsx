@@ -14,11 +14,6 @@ interface MasterResponse<T = any> {
     message: string;
 }
 
-interface Items {
-    kategori_tempat_id: number;
-    nama: string;
-    icon: string;
-}
 
 interface MasterParams {
     page?: number;
@@ -27,7 +22,7 @@ interface MasterParams {
     // tambahkan filter lainnya sesuai kebutuhan
 }
 
-export const useMaster = <T extends Items = Items>(
+export const useMaster = (
     jenis: 'kategori-tempat' | 'kategori-artikel' | string,
     params?: MasterParams
 ) => {
@@ -42,7 +37,7 @@ export const useMaster = <T extends Items = Items>(
                 jenis: jenisParam,
                 params: {
                     page: pageParam,
-                    limit: paramsParam?.limit || 10,
+                    limit: paramsParam?.limit || 100,
                     search: paramsParam?.search || '',
                 },
             });
@@ -80,7 +75,8 @@ export const useMaster = <T extends Items = Items>(
 
     // DELETE
     const deleteMutation = useMutation({
-        mutationFn: (id: number) => api.deleteMaster(jenis, id),
+        mutationFn: ({ key, value }: { key: string, value: number | string }) =>
+            api.deleteMaster(jenis, key, value),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['master', jenis] });
         },
@@ -88,6 +84,7 @@ export const useMaster = <T extends Items = Items>(
             console.error('Delete error:', error);
         },
     });
+
 
     return {
         ...getQuery,
