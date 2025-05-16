@@ -48,16 +48,24 @@ const getAllKategoriTempat = async (req, res) => {
   try {
     const cari = req.query.cari || null;
     const sort = req.query.sort || "kategori_tempat_id.asc";
-
-    const { data } = await kategoriTempatService.getAllKategoriTempat({
-      cari,
-      sort,
-    });
+    const limit = req.query.limit || 10;
+    const page = req.query.page || 1;
+    const { data, pagination } =
+      await kategoriTempatService.getAllKategoriTempat({
+        cari,
+        sort,
+        limit,
+        page,
+      });
 
     res
       .status(200)
       .json(
-        formatPaginatedMessage("Berhasil mengambil data kategori tempat", data)
+        formatPaginatedMessage(
+          "Berhasil mengambil data kategori tempat",
+          data,
+          pagination
+        )
       );
   } catch (error) {
     console.error("Gagal mengambil kategori tempat:", error.message);
@@ -175,8 +183,6 @@ const getAllFasilitas = async (req, res) => {
       limit,
       page,
     });
-    console.log("data dari parent", data);
-
     res
       .status(200)
       .json(
