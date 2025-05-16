@@ -49,15 +49,16 @@ const getAllKategoriTempat = async (req, res) => {
     const cari = req.query.cari || null;
     const sort = req.query.sort || "kategori_tempat_id.asc";
 
-    const { data } =
-      await kategoriTempatService.getAllKategoriTempat({
-        cari,
-        sort,
-      });
+    const { data } = await kategoriTempatService.getAllKategoriTempat({
+      cari,
+      sort,
+    });
 
-    res.status(200).json(
-      formatPaginatedMessage("Berhasil mengambil data kategori tempat", data)
-    );
+    res
+      .status(200)
+      .json(
+        formatPaginatedMessage("Berhasil mengambil data kategori tempat", data)
+      );
   } catch (error) {
     console.error("Gagal mengambil kategori tempat:", error.message);
     res.status(500).json({
@@ -130,21 +131,24 @@ const tambahKategoriTempat = async (req, res) => {
   try {
     const { nama, icon } = req.body;
 
-    if (!nama ) {
+    if (!nama) {
       return res.status(400).json({
         code: 500,
         message: "Field 'nama' wajib diisi",
       });
     }
 
-    if(!icon) {
+    if (!icon) {
       return res.status(400).json({
         code: 500,
         message: "Field 'icon' wajib diisi",
       });
     }
 
-    const result = await kategoriTempatService.tambahKategoriTempat({ nama, icon });
+    const result = await kategoriTempatService.tambahKategoriTempat({
+      nama,
+      icon,
+    });
 
     res.status(201).json({
       code: 200,
@@ -161,13 +165,20 @@ const tambahKategoriTempat = async (req, res) => {
 
 const getAllFasilitas = async (req, res) => {
   try {
-    const fasilitas = await fasilitasService.getAll();
-
-    res.status(200).json({
-      code: 200,
-      message: "Berhasil mengambil data fasilitas",
-      data: fasilitas,
+    const cari = req.query.cari || null;
+    const sort = req.query.sort || "fasilitas_id.asc";
+    const limit = req.query.limit || 10;
+    const page = req.query.page || 1;
+    const { data } = await fasilitasService.getAllFasilitas({
+      cari,
+      sort,
+      limit,
+      page,
     });
+
+    res
+      .status(200)
+      .json(formatPaginatedMessage("Berhasil mengambil data fasilitas", data));
   } catch (error) {
     console.error("Gagal mengambil data fasilitas:", error.message);
     res.status(500).json({
@@ -233,17 +244,16 @@ const hapusFasilitas = async (req, res) => {
 
 const tambahFasilitas = async (req, res) => {
   try {
-    const { nama } = req.body;
+    const { nama, icon } = req.body;
 
-    if (!nama) {
+    if (!nama || !icon) {
       return res.status(400).json({
         code: 500,
-        message: "Field 'nama' wajib diisi",
+        message: "Field 'nama' dan 'icon' wajib diisi",
       });
     }
 
-    const result = await fasilitasService.tambah({ nama });
-
+    const result = await fasilitasService.tambah({ nama, icon });
     res.status(201).json({
       code: 200,
       message: "Fasilitas berhasil ditambahkan",
