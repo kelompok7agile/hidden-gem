@@ -9,7 +9,13 @@ const getAllFasilitas = async ({
   limit = 10,
 }) => {
   try {
-    const {data, total_data, halaman_sekarang, limit_per_halaman, total_halaman} = await fasilitasRepository.getAllWithPagination({
+    const {
+      data,
+      total_data,
+      halaman_sekarang,
+      limit_per_halaman,
+      total_halaman,
+    } = await fasilitasRepository.getAllWithPagination({
       cari,
       sort,
       page,
