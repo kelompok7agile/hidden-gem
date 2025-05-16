@@ -8,14 +8,28 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/contexts/AuthContext';
 const LoginPage = () => {
   const { mutate: login, isPending } = useLogin();
+  const { user } = useAuthContext();
+
   const [form, setForm] = useState({ email: 'fajar.hidayat@gmail.com', password: 'admin123' });
   const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login(form);
   };
+
+  if (user) {
+    toast.error("Anda sudah login");
+    setTimeout(() => {
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/app");
+      }
+    }, 2000);
+  }
 
   return (
     <>
