@@ -169,16 +169,23 @@ const getAllFasilitas = async (req, res) => {
     const sort = req.query.sort || "fasilitas_id.asc";
     const limit = req.query.limit || 10;
     const page = req.query.page || 1;
-    const { data } = await fasilitasService.getAllFasilitas({
+    const { data, pagination } = await fasilitasService.getAllFasilitas({
       cari,
       sort,
       limit,
       page,
     });
+    console.log("data dari parent", data);
 
     res
       .status(200)
-      .json(formatPaginatedMessage("Berhasil mengambil data fasilitas", data));
+      .json(
+        formatPaginatedMessage(
+          "Berhasil mengambil data fasilitas",
+          data,
+          pagination
+        )
+      );
   } catch (error) {
     console.error("Gagal mengambil data fasilitas:", error.message);
     res.status(500).json({
