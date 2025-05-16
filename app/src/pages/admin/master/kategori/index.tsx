@@ -35,7 +35,7 @@ const index = () => {
         create,
         update,
         remove,
-    } = useMaster<Items>('kategori-tempat');
+    } = useMaster('kategori-tempat');
 
 
     interface DialogState {
@@ -115,7 +115,7 @@ const index = () => {
             console.log('delete', form);
             if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
                 console.log('delete if', form);
-                await remove?.mutate(form.kategori_tempat_id);
+                await remove?.mutate({ key: 'kategori_tempat_id', value: form.kategori_tempat_id });
 
                 if (remove.isSuccess) {
                     toast.success('Data berhasil dihapus');
