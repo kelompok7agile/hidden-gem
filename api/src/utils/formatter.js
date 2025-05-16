@@ -34,11 +34,11 @@ const formatPaginatedMessage = (
   return {
     code,
     data: {
-      ...data,
-      limit: pagination.limit || 10,
-      page: pagination.page || 1,
-      total_data: pagination.total_data || 0,
-      total_halaman: pagination.total_halaman || 0,
+      data: [...data],
+      limit: Number(pagination.limit_per_halaman) || 10,
+      page: Number(pagination.halaman_sekarang) || 1,
+      total_data: Number(pagination.total_data) || 0,
+      total_halaman: Number(pagination.total_halaman) || 0,
     },
     message,
   };
