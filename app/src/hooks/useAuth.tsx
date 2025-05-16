@@ -2,6 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { login, LoginPayload, LoginResponse, register, RegisterPayload, RegisterResponse } from '../api/auth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuthContext } from '@/contexts/AuthContext';
 export const useLogin = () => {
     interface Error {
         message: string;
@@ -76,4 +78,21 @@ export const useRegister = () => {
         },
     });
 }
+
+export const useAuthCheck = (requiredRole?: 'admin' | 'user') => {
+  const { isAuthenticated, user: storedUser, loading } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated) {
+        navigate('/auth/login');
+      } else if (requiredRole && storedUser?.role !== requiredRole) {
+        navigate('/unauthorized');
+      }
+    }
+  }, [isAuthenticated, storedUser, loading, requiredRole, navigate]);
+
+  return { isAuthenticated, storedUser, loading };
+};
 
