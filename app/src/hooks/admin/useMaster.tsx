@@ -37,7 +37,7 @@ export const useMaster = (
                 jenis: jenisParam,
                 params: {
                     page: pageParam,
-                    limit: paramsParam?.limit || 100,
+                    limit: paramsParam?.limit || 10,
                     search: paramsParam?.search || '',
                 },
             });
