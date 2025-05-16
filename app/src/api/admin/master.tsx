@@ -37,8 +37,9 @@ export const updateMaster = async (jenis: Jenis, id: number, payload: any) => {
     return res.data;
 };
 
-export const deleteMaster = async (jenis: Jenis, kategori_tempat_id: number) => {
-    const res = await axios.post(`admin/master-${jenis}/hapus`, { kategori_tempat_id });
+export const deleteMaster = async (jenis: Jenis, key: string, value: number | string) => {
+    const res = await axios.post(`admin/master-${jenis}/hapus`, { [key]: value });
     return res.data;
 };
+
 
