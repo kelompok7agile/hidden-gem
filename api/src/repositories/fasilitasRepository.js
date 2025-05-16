@@ -1,6 +1,5 @@
 const supabase = require("../config/database");
 
-
 const getAll = async () => {
   const { data, error } = await supabase
     .from("fasilitas")
@@ -8,6 +7,29 @@ const getAll = async () => {
     .order("fasilitas_id", { ascending: true });
   if (error) throw error;
   return data;
+};
+
+const getAllWithPagination = async ({
+  page = 1,
+  limit = 10,
+  search = null,
+}) => {
+  let query = supabase
+    .from("fasilitas")
+    .select("*", { count: "exact" })
+    .order("fasilitas_id", { ascending: true })
+    .range((page - 1) * limit, page * limit - 1);
+
+  if (search) {
+    query = query.ilike("nama", `%${search}%`);
+  }
+
+  const { data, count, error } = await query;
+  if (error) throw error;
+
+  return {
+    data,
+  };
 };
 
 const insert = async (data) => {
@@ -54,6 +76,7 @@ const findByNama = async (nama) => {
 
 module.exports = {
   getAll,
+  getAllWithPagination,
   insert,
   update,
   remove,
