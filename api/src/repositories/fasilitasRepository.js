@@ -29,6 +29,10 @@ const getAllWithPagination = async ({
 
   return {
     data,
+    total_data: count,
+    halaman_sekarang: page,
+    limit_per_halaman: limit,
+    total_halaman: Math.ceil(count / limit),
   };
 };
 
