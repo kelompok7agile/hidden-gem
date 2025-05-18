@@ -70,7 +70,7 @@ const createTempat = async (req, res) => {
     const user_id = req.user.user_id;
     const tempatBaru = await tempatService.createTempat(req.body, req.files, user_id);
 
-    res.status(201).json({
+    res.status(200).json({
       code: 200,
       message: "Tempat berhasil ditambahkan",
       data: tempatBaru,
@@ -125,7 +125,7 @@ const hapusTempat = async (req, res) => {
     const user_id = req.user.user_id;
 
     if (!tempat_id) {
-      return res.status(400).json({ code: 500, message: "tempat_id wajib diisi" });
+      return res.status(500).json({ code: 500, message: "tempat_id wajib diisi" });
     }
 
     const result = await tempatService.hapusTempat(tempat_id, user_id);
@@ -150,7 +150,7 @@ const uploadFotoTempat = async (req, res) => {
     const user_id = req.user.user_id;
 
     if (!tempat_id) {
-      return res.status(400).json({ code: 500, message: "tempat_id wajib diisi" });
+      return res.status(500).json({ code: 500, message: "tempat_id wajib diisi" });
     }
 
     const result = await tempatService.uploadTempat(tempat_id, req.files, user_id);
