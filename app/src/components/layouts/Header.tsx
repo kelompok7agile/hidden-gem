@@ -134,7 +134,7 @@ export function Header() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className='w-56' align='end' forceMount>
                                     <DropdownMenuLabel className='font-normal'>
-                                        <div className='flex flex-col space-y-1'>
+                                        <div className='flex flex-col space-y-1 cursor-pointer' onClick={() => (window.location.href = "/app/profil")}>
                                             <p className='text-sm font-medium leading-none'>{user?.nama}</p>
                                             <p className='text-xs leading-none text-muted-foreground'>
                                                 {user?.email}
