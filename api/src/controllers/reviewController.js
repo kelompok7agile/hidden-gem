@@ -6,7 +6,7 @@ const addReview = async (req, res) => {
 
     try {
         const newReview = await reviewService.addReview(tempat_id, user_id, rating, review);
-        res.status(201).json(formatMessage("Review berhasil ditambahkan", newReview));
+        res.status(200).json(formatMessage("Review berhasil ditambahkan", newReview));
     } catch (error) {
         console.error("Kesalahan saat menambahkan review:", error.message);
         return res.status(500).json(formatMessage(error.message));
