@@ -26,6 +26,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response.status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/auth/login";
     } else if (error.response.status === 403) {
       // Handle forbidden error (403)
