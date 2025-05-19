@@ -2,12 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Icons } from "@/components/icons";
-import { appConfig } from "@/config/app";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { Input } from "@/components/ui/input";
-import logo from "../../assets/image/logo/logo.png";
 
 import {
     DropdownMenu,
@@ -19,18 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { mainMenu } from "@/config/menu";
-import { ChevronDownIcon, ViewVerticalIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Logo } from "../../logo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ModeToggle } from "../../mode-toggle";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import MultiSelect from "../../ui/multi-select";
-import axios from "axios";
 import { useAuthContext } from '../../../contexts/AuthContext';
-import { log } from "console";
-import { D } from "@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o";
-
 
 interface Fasilitas {
     value: string;
