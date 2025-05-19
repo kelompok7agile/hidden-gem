@@ -12,6 +12,9 @@ export default defineConfig(({ command }) => {
     plugins: [react()],
     server: {
       port: 3000,
+      watch: {
+        usePolling: true,
+      },
     },
     resolve: {
       alias: {
