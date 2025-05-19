@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "detail-tempat",
+        path: "detail-tempat/:id",
         element: <DetailTempat />,
       },
       {
