@@ -27,33 +27,26 @@ export const useMaster = (
     params?: MasterParams
 ) => {
     const queryClient = useQueryClient();
-    // GET
 
-    const getQuery = useInfiniteQuery<MasterResponse<{ data: any[] }>, Error>({
+    // GET
+    const getQuery = useInfiniteQuery<MasterResponse, Error>({
         queryKey: ['master', jenis, params],
-        queryFn: async ({ pageParam = 1, queryKey }) => {
-            const [, jenisParam, paramsParam] = queryKey as [string, string, MasterParams?];
+        queryFn: async ({ pageParam = params?.page || 1 }) => {
             return api.getMaster({
-                jenis: jenisParam,
+                jenis,
                 params: {
                     page: pageParam,
-                    limit: paramsParam?.limit || 10,
-                    search: paramsParam?.search || '',
+                    limit: params?.limit || 10,
+                    search: params?.search || '',
                 },
             });
         },
-        initialPageParam: 1,
+        initialPageParam: params?.page || 1,
         getNextPageParam: (lastPage) => {
             const current = lastPage.data.page;
             const total = lastPage.data.total_halaman;
             return current < total ? current + 1 : undefined;
         },
-        select: (data) => ({
-            ...data,
-            // Flatten pages untuk akses mudah
-            flatData: data.pages.flatMap(page => page.data.data),
-            totalData: data.pages[0]?.data.total_data || 0,
-        }),
     });
 
     // CREATE
@@ -88,6 +81,7 @@ export const useMaster = (
 
     return {
         ...getQuery,
+        isLoading: getQuery.isLoading,
         data: getQuery.data?.pages.flatMap(page => page.data.data) || [],
         pagination: {
             page: getQuery.data?.pages[0]?.data.page || 1,
@@ -98,7 +92,6 @@ export const useMaster = (
         create: createMutation,
         update: updateMutation,
         remove: deleteMutation,
-        // tambahkan refetch untuk memudahkan refresh dengan parameter baru
         refetchWithParams: (newParams: MasterParams) => {
             queryClient.invalidateQueries({
                 queryKey: ['master', jenis, newParams]
