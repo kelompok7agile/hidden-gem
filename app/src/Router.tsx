@@ -13,7 +13,7 @@ import Profil from "./pages/public/profil";
 import FormProfil from "./pages/public/profil/form";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
-
+import DetailTempat from "./pages/public/DetailTempat";
 import DashboardAdmin from "./pages/admin/Dashboard";
 import DashboardMaster from "./pages/admin/master/DashboardMaster";
 
@@ -40,8 +40,8 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "sample",
-        element: <Sample />,
+        path: "detail-tempat",
+        element: <DetailTempat />,
       },
       {
         path: "empty",
