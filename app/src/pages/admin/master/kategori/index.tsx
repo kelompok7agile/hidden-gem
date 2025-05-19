@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Table,
     TableBody,
@@ -23,29 +23,37 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import IconPicker from '@/components/ui/icon-picker'
 import { useMaster } from '@/hooks/admin/useMaster'
+import { Pagination } from '@/components/ui/pagination';
 
 const master = 'kategori'
 
 const index = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const displayRange = 5;
+
     const {
         data: kategoriTempat = [],
         isLoading,
-        fetchNextPage,
-        hasNextPage,
         create,
         update,
         remove,
-    } = useMaster('kategori-tempat');
+        pagination,
+    } = useMaster('kategori-tempat', {
+        page: currentPage,
+        limit: 10,
+    });
 
+    const totalItems = pagination.totalData || 0;
+    const itemsPerPage = pagination.limit || 3;
 
     interface DialogState {
         open: boolean;
         jenis: string;
-        kategori_tempat_id: number | null; // ubah dari array ke single number
+        kategori_tempat_id: number | null;
     }
 
     interface FormState {
-        kategori_tempat_id: number | null; // ubah dari array ke single number
+        kategori_tempat_id: number | null;
         name: string;
         icon: string;
     }
@@ -86,50 +94,57 @@ const index = () => {
     }
 
     const handleSubmit = async () => {
-        console.log('clicked', form);
         if (dialog.jenis === 'tambah') {
-            await create?.mutate({ nama: form.name, icon: form.icon });
-            if (create.isSuccess) {
+            try {
+                await create.mutateAsync({ nama: form.name, icon: form.icon });
                 toast.success('Data berhasil ditambahkan');
-            } else if (create.isError) {
+                closeDialog();
+            } catch {
                 toast.error('Data gagal ditambahkan');
             }
         } else if (dialog.jenis === 'ubah') {
-            if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
-                await update?.mutate({
-                    id: form.kategori_tempat_id, payload: {
-                        nama: form.name,
-                        icon: form.icon,
-                        kategori_tempat_id: form.kategori_tempat_id
-                    }
-                });
-                if (update.isSuccess) {
+            if (form.kategori_tempat_id) {
+                try {
+                    await update.mutateAsync({
+                        id: form.kategori_tempat_id,
+                        payload: {
+                            nama: form.name,
+                            icon: form.icon,
+                            kategori_tempat_id: form.kategori_tempat_id
+                        }
+                    });
                     toast.success('Data berhasil diubah');
-                } else if (update.isError) {
+                    closeDialog();
+                } catch {
                     toast.error('Data gagal diubah');
                 }
             } else {
-                toast.error("kategori_tempat_id is null or undefined");
+                toast.error("ID kategori tidak valid");
             }
-        } else {
-            console.log('delete', form);
-            if (form.kategori_tempat_id && form.kategori_tempat_id !== undefined) {
-                console.log('delete if', form);
-                await remove?.mutate({ key: 'kategori_tempat_id', value: form.kategori_tempat_id });
-
-                if (remove.isSuccess) {
+        } else { // hapus
+            if (form.kategori_tempat_id) {
+                try {
+                    setCurrentPage(1);
+                    await remove.mutateAsync({
+                        key: 'kategori_tempat_id',
+                        value: form.kategori_tempat_id
+                    });
                     toast.success('Data berhasil dihapus');
-                } else if (remove.isError) {
+                    closeDialog();
+                } catch {
                     toast.error('Data gagal dihapus');
                 }
             } else {
-                toast.error("kategori_tempat_id is null or undefined");
+                toast.error("ID kategori tidak valid");
             }
         }
-        setTimeout(() => {
-            closeDialog()
-            fetchNextPage();
-        }, 3000);
+    };
+
+    const setNoUrut = (index: number) => {
+        const page = pagination.page || 1;
+        const limit = pagination.limit || 3;
+        const noUrut = (page - 1) * limit + index + 1;
+        return noUrut;
     }
 
     useEffect(() => {
@@ -144,7 +159,7 @@ const index = () => {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle className='capitalize'>
-                            {dialog.jenis} {master}
+                            {dialog.jenis} {master} {isLoading}
                         </DialogTitle>
                     </DialogHeader>
                     {dialog.jenis === 'hapus' ? (<div>
@@ -205,7 +220,7 @@ const index = () => {
                     <TableBody>
                         {kategoriTempat.map((item: any, index: number) => (
                             <TableRow key={item.kategori_tempat_id}>
-                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{setNoUrut(index)}</TableCell>
                                 <TableCell>{item.nama}</TableCell>
                                 <TableCell>
                                     <Icon icon={item.icon} width={24} height={24} />
@@ -222,8 +237,15 @@ const index = () => {
                         ))}
                     </TableBody>
                 </Table>
-
-            </div >
+            </div>
+            <Pagination
+                modelValue={currentPage}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                displayRange={displayRange}
+                onUpdateModelValue={(page) => setCurrentPage(page)}
+                navActiveButtonClass="drop-shadow-md text-white bg-blue-500 rounded-xl shadow-md"
+            />
         </>
     )
 }
