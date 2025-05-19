@@ -97,7 +97,7 @@ export default function Dashboard() {
                             <div
                                 key={i}
                                 className="w-full p-2 rounded-2xl hover:bg-white dark:hover:bg-gray-800 cursor-pointer transition duration-500 ease-in-out intro-y"
-                                onClick={() => navigate(`/hidden-gem/${place.tempat_id}`)}
+                                onClick={() => navigate(`/app/detail-tempat/${place.tempat_id}`)}
                             >
                                 <div className="w-full aspect-[16/9] overflow-hidden rounded-xl">
                                     <img
