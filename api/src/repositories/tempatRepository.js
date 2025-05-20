@@ -2,6 +2,7 @@ const supabase = require("../config/database");
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs-extra");
+const { formatDateID } = require("../utils/formatDate");
 
 const convertJamOperasional = (jamObj) => {
   if (!jamObj || typeof jamObj !== "object") return [];
@@ -149,11 +150,10 @@ const getAllTempat = async ({
         : 0;
 
     const kategori = (tempat.list_kategori_tempat_id || "")
-        .split(",")
-        .map((id) => kategoriMap[id.trim()])
-        .filter(Boolean)
-        .join(", ");
-      
+      .split(",")
+      .map((id) => kategoriMap[id.trim()])
+      .filter(Boolean)
+      .join(", ");
 
     const fasilitas = (tempat.list_fasilitas_id || "")
       .split(",")
@@ -205,19 +205,23 @@ const getTempatById = async (id) => {
     const kategoriIds = tempat.list_kategori_tempat_id
       ? tempat.list_kategori_tempat_id.split(",")
       : [];
+
     const { data: kategori, error: kategoriError } = await supabase
       .from("kategori_tempat")
-      .select("nama")
+      .select("nama, icon")
       .in("kategori_tempat_id", kategoriIds);
+
     if (kategoriError) throw kategoriError;
 
     const fasilitasIds = tempat.list_fasilitas_id
       ? tempat.list_fasilitas_id.split(",")
       : [];
+
     const { data: fasilitas, error: fasilitasError } = await supabase
       .from("fasilitas")
-      .select("nama")
+      .select("nama, icon")
       .in("fasilitas_id", fasilitasIds);
+
     if (fasilitasError) throw fasilitasError;
 
     const { data: fotoData, error: fotoError } = await supabase
@@ -232,10 +236,13 @@ const getTempatById = async (id) => {
         filename || ""
       );
       const fileExists = filename && fs.existsSync(filePath);
-      return fileExists ? `${process.env.API_BASE_URL}/dokumen/${filename}` : null;
+      return fileExists
+        ? `${process.env.API_BASE_URL}/dokumen/${filename}`
+        : null;
     };
 
     if (fotoError) throw fotoError;
+
     const detail_foto = fotoData
       .filter((foto) => foto.user?.user_group_id === "01")
       .map((f) => buildFotoUrl(f.foto))
@@ -248,25 +255,90 @@ const getTempatById = async (id) => {
 
     const ratingData = await supabase
       .from("rating")
-      .select("rating")
+      .select("rating, user_id, review, dibuat_pada")
       .eq("tempat_id", id);
+    console.log("ratingData", ratingData);
 
-    const ratings = ratingData.data || [];
+    const userIds = Array.isArray(ratingData.data)
+      ? ratingData.data.map((item) => item.user_id)
+      : [];
 
-    const avgRating =
-      ratings.length > 0
+    const { data: userData } = await supabase
+      .from("user")
+      .select("user_id, user_group_id, nama")
+      .in("user_id", userIds);
+
+    const userMap = {};
+    console.log("userData", userData);
+    if (userData.length === 0) {
+      console.log("Tidak ada data user ditemukan");
+      return {
+        ...tempat,
+        kategori: [...kategori],
+        fasilitas: [...fasilitas],
+        foto: [...detail_foto, ...galery],
+        jam_operasional: convertJamOperasional(tempat.jam_operasional),
+        rating_count: 0,
+        rating_count_by_user_group: {},
+        rating_count_total: 0,
+        rating: [],
+      };
+    }
+
+    userData.forEach((user) => {
+      userMap[user.user_id] = {
+        user_group_id: user.user_group_id,
+        nama_lengkap: user.nama,
+      };
+    });
+    const ratings = ratingData.data.map((item) => ({
+      rating: item.rating,
+      review: item.review,
+      user: {
+        user_id: item.user_id,
+        user_group_id: userMap[item.user_id]?.user_group_id,
+        nama_lengkap: userMap[item.user_id]?.nama_lengkap,
+      },
+      dibuat_pada: formatDateID(item.dibuat_pada, "full"),
+    }));
+
+    console.log("ratings", ratings);
+    const ratingCount = ratings.length;
+    const ratingAvg =
+      ratingCount > 0
         ? parseFloat(
-            (ratings.reduce((a, b) => a + b.rating, 0) / ratings.length).toFixed(2)
+            (ratings.reduce((a, b) => a + b.rating, 0) / ratingCount).toFixed(2)
           )
         : 0;
+    const ratingCountByUserGroup = {};
+    ratings.forEach((item) => {
+      const userGroupId = item.user.user_group_id;
+      if (!ratingCountByUserGroup[userGroupId]) {
+        ratingCountByUserGroup[userGroupId] = 0;
+      }
+      ratingCountByUserGroup[userGroupId]++;
+    });
+    const ratingCountByUserGroupArray = Object.entries(
+      ratingCountByUserGroup
+    ).map(([userGroupId, count]) => ({
+      user_group_id: userGroupId,
+      count,
+    }));
+    const ratingCountByUserGroupMap = {};
+    ratingCountByUserGroupArray.forEach((item) => {
+      ratingCountByUserGroupMap[item.user_group_id] = item.count;
+    });
 
     return {
       ...tempat,
-      kategori: kategori.map((item) => item.nama).join(", "),
-      fasilitas: fasilitas.map((item) => item.nama),
+      kategori: [...kategori],
+      fasilitas: [...fasilitas],
       foto: [...detail_foto, ...galery],
       jam_operasional: convertJamOperasional(tempat.jam_operasional),
-      rating_count: avgRating,
+      rating_count: ratingAvg,
+      rating_count_by_user_group: ratingCountByUserGroupMap,
+      rating_count_total: ratingCount,
+      rating: ratings,
     };
   } catch (error) {
     console.error("Kesalahan saat mengambil detail tempat:", error.message);
