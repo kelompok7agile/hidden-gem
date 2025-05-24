@@ -17,6 +17,7 @@ import DetailTempat from "./pages/public/DetailTempat";
 import DashboardAdmin from "./pages/admin/Dashboard";
 import DashboardMaster from "./pages/admin/master/DashboardMaster";
 
+
 export const router = createBrowserRouter([
   {
     path: "/",
