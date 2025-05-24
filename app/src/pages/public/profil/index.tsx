@@ -3,13 +3,18 @@ import logo from "@/assets/image/logo/logo.png";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { getDetailProfil } from "@/api/profil";
-import { useEffect } from "react";
+import type { Profil } from "@/api/profil";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Profil() {
 
+  // tambahkan generic agar TS tahu struktur objek profil
+  const [profil, setProfil] = useState<Profil>({} as Profil);
+  const navigate = useNavigate();
   const loadProfile = async () => {
     const res = await getDetailProfil();
-    console.log(res);
+    setProfil(res);
   }
 
   useEffect(() => {
@@ -20,38 +25,38 @@ export default function Profil() {
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size={'lg'} className="mb-4" onClick={() => window.history.back()}>
+        <Button variant="ghost" size={'lg'} className="mb-4" onClick={() => navigate('/app')}>
           <Icon icon="lucide:arrow-left" className="mr-2" />
           Profil
         </Button>
-        <Button variant="default" size={'lg'} className="mb-4" onClick={() => window.location.href = '/app/profil/ubah'}>
+        <Button variant="default" size={'lg'} className="mb-4" onClick={() => navigate('/app/profil/ubah')}>
           <Icon icon="lucide:edit" className="mr-2" />
           Edit
         </Button>
       </div>
       <div className="mt-6 flex flex-col items-start">
-        <Avatar className="w-32 h-32 border mx-auto">  
+        <Avatar className="w-32 h-32 border mx-auto">
           <AvatarImage src={logo} className="w-32 h-32 object-contain" />
           <AvatarFallback>HG</AvatarFallback>
         </Avatar>
-        
+
         <div className="mt-4 text-[#777777] text-sm font-semibold">
           Nama
         </div>
         <div className="text-primary text-lg font-semibold">
-          Hendra Gunawan
+          {profil?.nama || "-"}
         </div>
         <div className="mt-4 text-[#777777] text-sm font-semibold">
           Email
         </div>
         <div className="text-primary text-lg font-semibold">
-          1234567890-
+          {profil?.email || "-"}
         </div>
         <div className="mt-4 text-[#777777] text-sm font-semibold">
           No. HP
         </div>
         <div className="text-primary text-lg font-semibold">
-          1234567890-
+          {profil?.no_telepon || "-"}
         </div>
       </div>
     </div>

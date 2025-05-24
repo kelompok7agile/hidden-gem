@@ -8,6 +8,12 @@ const {
 } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
+const defaultHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
 router.post(
   "/register",
@@ -18,11 +24,7 @@ router.post(
 
 router.post("/login", userController.login);
 
-router.get(
-  "/profile",
-  authenticateUser,
-  userController.getProfile
-);
+router.get("/profile", authenticateUser, userController.getProfile);
 
 const upload = require("../middlewares/upload");
 
@@ -33,9 +35,6 @@ router.patch(
   userController.updateProfile
 );
 
-router.get(
-  "/get-opsi/:opsi",
-  userController.getOpsi
-)
+router.get("/get-opsi/:opsi", userController.getOpsi);
 
 module.exports = router;

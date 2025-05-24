@@ -12,15 +12,70 @@ const findByNama = async (nama) => {
   return data;
 };
 
-const getAll = async () => {
-  const { data, error } = await supabase
-    .from("kategori_tempat")
-    .select("kategori_tempat_id, nama, icon")
-    .order("kategori_tempat_id", { ascending: true });
+const getAll = async ({
+  cari = null,
+  sort = "kategori_tempat_id.asc",
+}) => {
+
+  let query = supabase.from("kategori_tempat").select("*", { count: "exact" });
+
+  if (cari) {
+    query = query.ilike("nama", `%${cari}%`);
+  }
+
+  if (sort) {
+    const [column, order] = sort.split(".");
+    query = query.order(column, { ascending: order === "asc" });
+  }
+
+  const { data, count, error } = await query;
 
   if (error) throw error;
 
-  return data;
+  return {
+    data
+  };
+};
+
+const getAllWithPagination = async ({
+  cari = null,
+  sort = "kategori_tempat_id.asc",
+  page = 1,
+  limit = 10,
+}) => {
+  let query = supabase
+    .from("kategori_tempat")
+    .select("*", { count: "exact" })
+    .order("kategori_tempat_id", { ascending: true })
+    .range((page - 1) * limit, page * limit - 1);
+
+  if (cari) {
+    query = query.ilike("nama", `%${cari}%`);
+  }
+
+  const { data, count, error } = await query;
+
+  if (error) throw error;
+
+  return {
+    data,
+    total_data: count,
+    halaman_sekarang: page,
+    limit_per_halaman: limit,
+    total_halaman: Math.ceil(count / limit),
+  };
+}
+
+const countAll = async () => {
+  const { count, error } = await supabase
+    .from("kategori_tempat")
+    .select("*", { count: "exact" });
+
+  console.log("count", count);
+
+  if (error) throw error;
+
+  return count;
 };
 
 const update = async (id, updateData) => {
@@ -61,4 +116,6 @@ module.exports = {
   deleteData,
   insert,
   findByNama,
+  countAll,
+  getAllWithPagination,
 };

@@ -2,6 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { login, LoginPayload, LoginResponse, register, RegisterPayload, RegisterResponse } from '../api/auth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuthContext } from '@/contexts/AuthContext';
 export const useLogin = () => {
     interface Error {
         message: string;
@@ -21,8 +23,14 @@ export const useLogin = () => {
             localStorage.setItem('user', JSON.stringify(data));
             console.log('Login sukses:', data);
             toast.success('Login berhasil');
-            navigate('/app');
-            window.location.reload(); // Reload the page to apply the token
+            console.log(data, 'data')
+
+            if(data?.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/app');
+            }
+            window.location.reload();
         },
         onError: (err) => {
             console.log(err, 'err')
@@ -70,4 +78,21 @@ export const useRegister = () => {
         },
     });
 }
+
+export const useAuthCheck = (requiredRole?: 'admin' | 'user') => {
+  const { isAuthenticated, user: storedUser, loading } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated) {
+        navigate('/auth/login');
+      } else if (requiredRole && storedUser?.role !== requiredRole) {
+        navigate('/unauthorized');
+      }
+    }
+  }, [isAuthenticated, storedUser, loading, requiredRole, navigate]);
+
+  return { isAuthenticated, storedUser, loading };
+};
 

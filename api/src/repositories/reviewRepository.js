@@ -16,18 +16,24 @@ const createReview = async (tempat_id, user_id, rating, review) => {
     }
 };
 
-const getReviewsByTempatId = async (tempat_id) => {
-    const { data, error } = await supabase
-        .from("rating")
-        .select("user_id, rating, review")
-        .eq("tempat_id", tempat_id);
-
+const getReviewsByTempatId = async (tempat_id, limit = 10, offset = 0) => {
+    const { data, count,  error } = await supabase
+      .from("rating")
+      .select("user_id, rating, review",       { count: "exact" })
+      .eq("tempat_id", tempat_id)
+      .range(offset, offset + limit - 1);
+  
     if (error) {
-        console.error("Kesalahan saat mengambil data review:", error.message);
-        throw error;
+      console.error("Kesalahan saat mengambil data review:", error.message);
+      throw error;
     }
-    return data;
-}
+  
+    return {
+        data: data,
+        count
+    }
+  };
+  
 
 module.exports = {
     createReview,

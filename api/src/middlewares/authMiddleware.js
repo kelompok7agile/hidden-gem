@@ -5,12 +5,21 @@ const authenticateUser = (req, res, next) => {
     const token = req.headers.hgtoken;
 
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized: Token tidak ditemukan" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: Token tidak ditemukan" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    if (!decoded) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: Token tidak valid" });
+    }
+
     req.user = decoded;
+    console.log("Decoded token:", decoded);
 
     next();
   } catch (error) {
@@ -19,13 +28,13 @@ const authenticateUser = (req, res, next) => {
   }
 };
 
-
-
 const checkRole = (requiredRole) => {
   return (req, res, next) => {
     try {
       if (!req.user || req.user.user_group_id !== requiredRole) {
-        return res.status(403).json({ message: "Forbidden: Anda tidak memiliki akses" });
+        return res
+          .status(403)
+          .json({ message: "Forbidden: Anda tidak memiliki akses" });
       }
       next(); // Lanjutkan ke endpoint berikutnya
     } catch (error) {
@@ -35,7 +44,7 @@ const checkRole = (requiredRole) => {
   };
 };
 
-module.exports = { 
-    authenticateUser,
-    checkRole
+module.exports = {
+  authenticateUser,
+  checkRole,
 };

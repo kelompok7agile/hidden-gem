@@ -31,7 +31,8 @@ const RegisterPage = () => {
                             height={100}
                             src={logo}
                             alt="Logo"
-                            className="rounded-full object-contain"
+                            className="rounded-full object-contain cursor-pointer"
+                            onClick={() => navigate("/")}
                         />
                         <p className="font-bold text-primary text-2xl">{appConfig?.name}</p>
                     </div>

@@ -2,10 +2,16 @@ import AvatarField from "@/components/ui/avatar-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDetailProfil, patchDataProfil } from "@/api/profil";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import { getInitials } from "@/lib/utils";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function Form() {
-
+  const navigate = useNavigate();
+  const { login } = useAuthContext();
   const [form, setForm] = useState<{
     profil_picture: File | null;
     nama: string;
@@ -21,6 +27,8 @@ export default function Form() {
     password: "",
     password_confirmation: "",
   });
+
+  const [userId, setUserId] = useState<number | null>(null);
 
   const handleChange = (key: any, value: any) => {
     setForm({
@@ -54,7 +62,55 @@ export default function Form() {
     formData.append("password", form.password);
     formData.append("password_confirmation", form.password_confirmation);
     // Perform the API request here
+
+    if (userId !== null) {
+      try {
+        const updatedData = await patchDataProfil(userId, formData);
+        toast.success("Profil berhasil diperbarui");
+        // @ts-ignore
+        const updated = updatedData && updatedData.length > 0 ? updatedData[0] : updatedData;
+        const getUserFromStorage = localStorage.getItem('user');
+
+        if (getUserFromStorage) {
+          const user = JSON.parse(getUserFromStorage);
+          user.nama = updated.nama || user.nama || null;
+          user.email = updated.email || user.email || null;
+          user.no_telepon = updated.no_telepon || user.no_telepon || null;
+          user.profile_img = updated.profile_img || user.profile_img || null;
+          user.user_group_id = updated.user_group_id || user.user_group_id || null;
+          user.user_group = updated.user_group || user.user_group || { nama: "Pengguna" };
+          user.user_id = updated.user_id || user.user_id || null;
+          user.token = user.token || null;
+          user.short_name = getInitials(updated.nama);
+          login(user);
+
+        }
+        navigate('/app/profil');
+      } catch (e) {
+        console.error("Gagal update profil:", e);
+        toast.error("Gagal memperbarui profil");
+      }
+    }
   }
+
+  // CORE: prefill form dari API saat mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getDetailProfil();
+        setUserId(data.user_id);
+        setForm(f => ({
+          ...f,
+          nama: data.nama,
+          email: data.email,
+          no_telepon: data.no_telepon,
+        }));
+        // kalau mau fetch avatar: getFile(data.profile_img, "avatar.jpg")
+      } catch (err) {
+        console.error("Gagal load profil untuk form:", err);
+      }
+    })();
+  }, []);
 
 
   return (
@@ -70,63 +126,62 @@ export default function Form() {
         </Button>
       </div>
       <div className="mt-6 flex flex-col items-center justify-center">
-        <AvatarField initialValue={form.profil_picture ?? undefined} onFileChange={(file) => {handleFileChange(file)}} />
         <div>
-        <div className="mt-4 text-[#777777] text-sm font-semibold">
-          Nama
-        </div>
-        <Input
-          type="text"
-          name="nama"
-          value={form.nama}
-          onChange={(val) => handleChange('nama', val.target.value)}
-          className="w-[300px]"
-          placeholder="Masukkan nama"
-        />
-        <div className="mt-4 text-[#777777] text-sm font-semibold">
-          Email
+          <div className="mt-4 text-[#777777] text-sm font-semibold">
+            Nama
           </div>
-        <Input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={(val) => handleChange('email', val.target.value)}
-          className="w-[300px]"
-          placeholder="Masukkan email"
-        />
-        <div className="mt-4 text-[#777777] text-sm font-semibold">
-          No. HP
+          <Input
+            type="text"
+            name="nama"
+            value={form.nama}
+            onChange={(val) => handleChange('nama', val.target.value)}
+            className="w-[300px]"
+            placeholder="Masukkan nama"
+          />
+          <div className="mt-4 text-[#777777] text-sm font-semibold">
+            Email
           </div>
-        <Input
-          type="text"
-          name="no_telepon"
-          value={form.no_telepon}
-          onChange={(val) => handleChange('no_telepon', val.target.value)}
-          className="w-[300px]"
-          placeholder="Masukkan no. telepon"
-        />
-        <div className="mt-4 text-[#777777] text-sm font-semibold">
-          Password
+          <Input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={(val) => handleChange('email', val.target.value)}
+            className="w-[300px]"
+            placeholder="Masukkan email"
+          />
+          <div className="mt-4 text-[#777777] text-sm font-semibold">
+            No. HP
           </div>
-        <Input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={(val) => handleChange('password', val.target.value)}
-          className="w-[300px]"
-          placeholder="Masukkan password"
-        />
-        <div className="mt-4 text-[#777777] text-sm font-semibold">
-          Konfirmasi Password
+          <Input
+            type="text"
+            name="no_telepon"
+            value={form.no_telepon}
+            onChange={(val) => handleChange('no_telepon', val.target.value)}
+            className="w-[300px]"
+            placeholder="Masukkan no. telepon"
+          />
+          <div className="mt-4 text-[#777777] text-sm font-semibold">
+            Password
           </div>
-        <Input
-          type="password"
-          name="password_confirmation"
-          value={form.password_confirmation}
-          onChange={(val) => handleChange('password_confirmation', val.target.value)}
-          className="w-[300px]"
-          placeholder="Masukkan konfirmasi password"
-        />
+          <Input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={(val) => handleChange('password', val.target.value)}
+            className="w-[300px]"
+            placeholder="Masukkan password"
+          />
+          <div className="mt-4 text-[#777777] text-sm font-semibold">
+            Konfirmasi Password
+          </div>
+          <Input
+            type="password"
+            name="password_confirmation"
+            value={form.password_confirmation}
+            onChange={(val) => handleChange('password_confirmation', val.target.value)}
+            className="w-[300px]"
+            placeholder="Masukkan konfirmasi password"
+          />
         </div>
 
       </div>

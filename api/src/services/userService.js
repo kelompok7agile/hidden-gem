@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userRepository = require("../repositories/userRepository.js");
 const { hashPassword, comparePassword } = require("../utils/hashPassword.js");
+const { getInitials } = require("../utils/initialsNameUtils.js");
 
 const getAllUsers = async () => {
   try {
@@ -28,14 +29,12 @@ const register = async (userData) => {
       user_group_id = "02",
     } = userData;
 
-    const existingUser = await userRepository.findUserByEmail(email); //pengecekan email
+    const existingUser = await userRepository.findUserByEmail(email);
     if (existingUser) {
       return new Error("Email sudah terdaftar");
     }
-    // Hash password menggunakan fungsi dari utils
     const { hashedPassword, salt } = await hashPassword(password);
 
-    // Buat user baru
     const createUser = await userRepository.createUser({
       nama,
       email,
@@ -54,7 +53,6 @@ const register = async (userData) => {
       throw new Error("User tidak ditemukan setelah pendaftaran");
     }
     const { new_password, salt_password, ...other } = user;
-    console.log("newUser: ", other);
     return other;
   } catch (error) {
     throw error;
@@ -93,20 +91,12 @@ const login = async (email, password) => {
       salt_password,
       ...userWithoutSensitiveData
     } = user;
-    let shortName = null;
-    let userLogin = user.nama || null;
-    userLogin.includes(" ") ? userLogin.split(" ") : userLogin;
-
-    console.log("userLogin: ", userLogin);
-    Array.isArray(userLogin)
-      ? (shortName = userLogin[0].charAt(0) + userLogin[1].charAt(0))
-      : (shortName = userLogin.charAt(0));
-    console.log("shortName: ", shortName);
-
+    console.log("ini user: ", userWithoutSensitiveData);
     return {
       token,
       role,
-      short_name: shortName,
+      short_name: getInitials(user.nama),
+
       ...userWithoutSensitiveData,
     };
   } catch (error) {
@@ -131,6 +121,7 @@ const updateProfile = async (user_id, userData, file) => {
       email,
       no_telepon,
       ...(hashedPassword && { password: hashedPassword, salt_password: salt }),
+      short_name: getInitials(nama),
     };
 
     if (file) {

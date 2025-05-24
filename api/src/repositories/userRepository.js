@@ -2,6 +2,7 @@ const supabase = require("../config/database");
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs-extra");
+const { getInitials } = require("../utils/initialsNameUtils");
 
 const getAllUsers = async () => {
   try {
@@ -51,7 +52,7 @@ const getAllUsers = async () => {
 const findUserByEmail = async (email) => {
   const { data, error } = await supabase
     .from("user")
-    .select("user_id, nama, email, password, salt_password, user_group_id") // hanya mengambil kolom nama dan email
+    .select("user_id, nama, email, password, salt_password, user_group_id, no_telepon, profile_img") // hanya mengambil kolom nama dan email
     .eq("email", email)
     .maybeSingle(); // mengambil satu baris data
 
@@ -113,7 +114,7 @@ const updateUser = async (userId, userData) => {
     console.error("Error updating user:", error.message);
     throw error;
   }
-
+  console.log("User updated successfully:", data);
   return data;
 };
 
@@ -156,7 +157,26 @@ const getUserById = async (userId) => {
     data.profile_img = null;
   }
 
-  return data;
+
+  console.log("Fetched user by ID:", data);
+  if (!data) {
+    throw new Error("User tidak ditemukan");
+  }
+
+  const objResponse = {
+    ...data,
+    user_id: data.user_id,
+    nama: data.nama,
+    email: data.email,
+    no_telepon: data.no_telepon,
+    profile_img: data.profile_img,
+    user_group_id: data.user_group_id,
+    user_group: data.user_group ? data.user_group.nama : null,
+    short_name: getInitials(data.nama),
+  };
+
+  console.log("Returning user data:", objResponse);
+  return objResponse;
 };
 
 const getOpsi = async (value) => { 
@@ -174,7 +194,7 @@ const getOpsi = async (value) => {
     }
 
     data = data_value.map((item) => ({
-      id: item.fasilitas_id,
+      fasilitas_id: item.fasilitas_id,
       name: item.nama,
       icon: item.icon,
     }));
@@ -190,7 +210,7 @@ const getOpsi = async (value) => {
     }
 
     data = data_value.map((item) => ({
-      id: item.kategori_tempat_id,
+      kategori_tempat_id: item.kategori_tempat_id,
       name: item.nama,
       icon: item.icon,
     }));

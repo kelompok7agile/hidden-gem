@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import { Applayout } from "./components/layouts/AppLayout";
+import { ApplayoutAdmin } from "./components/layouts/admin/AppLayoutAdmin";
+
 
 import NoMatch from "./pages/NoMatch";
 import Dashboard from "./pages/public/Dashboard";
@@ -12,6 +14,9 @@ import FormProfil from "./pages/public/profil/form";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
 import DetailTempat from "./pages/public/DetailTempat";
+import DashboardAdmin from "./pages/admin/Dashboard";
+import DashboardMaster from "./pages/admin/master/DashboardMaster";
+
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +41,7 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "detail-tempat",
+        path: "detail-tempat/:id",
         element: <DetailTempat />,
       },
       {
@@ -48,15 +53,25 @@ export const router = createBrowserRouter([
         element: <Profil />,
       },
       {
-        path: "profil/ubah",  
+        path: "profil/ubah",
         element: <FormProfil />,
       }
     ],
   },
-  // {
-  //   path: "/admin",
-  //   element: <Applayout />,
-  // },
+  {
+    path: "/admin",
+    element: <ApplayoutAdmin />,
+    children: [
+      {
+        path: "/admin",
+        element: <DashboardAdmin />,
+      },
+      {
+        path: "/admin/master/:jenis",
+        element: <DashboardMaster />,
+      },
+    ]
+  },
   {
     path: "*",
     element: <NoMatch />,

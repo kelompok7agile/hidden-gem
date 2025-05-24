@@ -21,5 +21,5 @@ dotenv.config(); // Load environment variables
 // Jalankan server
 const PORT = 5000; // Port server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on localhost:${PORT}`);
 });

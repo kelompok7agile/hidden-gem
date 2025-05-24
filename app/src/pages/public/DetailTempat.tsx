@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -9,13 +9,74 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { useTempatById } from "@/hooks/useTempat";
+import { useParams } from 'react-router-dom';
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom";
 
 const DetailTempat = () => {
+  const params = useParams();
+  const idTempat = params.id;
+
+  const { data, isLoading, isError } = useTempatById(
+    idTempat as string
+  );
+  const navigate = useNavigate();
+  const handleBack = () => {
+    navigate(-1); // Kembali ke halaman sebelumnya
+  }
+
+  // Ambil data tempat dari halaman pertama
+  const tempat = data?.data
+
+  useEffect(() => {
+    if (idTempat) {
+      console.log("ID Tempat yang diambil dari URL:", idTempat);
+      console.log("Data Tempat:", tempat);
+      console.log('data:', data);
+    }
+  }, [idTempat, tempat]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="h-8 w-1/2 mb-6" />
+        <div className="grid grid-cols-12 gap-4 mb-6">
+          <Skeleton className="col-span-6 h-64" />
+          <div className="col-span-6 grid grid-cols-2 gap-4">
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+          </div>
+        </div>
+        <Skeleton className="h-8 w-1/3 mb-4" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-3/4 mb-4" />
+        <Skeleton className="h-4 w-1/2 mb-6" />
+      </div>
+    );
+  }
+
+  if (isError || !tempat) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <p>Gagal memuat data tempat</p>
+      </div>
+    );
+  }
+
+  // Format jam operasional
+  const formatJamOperasional = (jam: string | null) => {
+    if (!jam) return "Libur";
+    return jam.replace(/:/g, '.');
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" size={"lg"}>
+        <Button variant="ghost" size={"lg"} onClick={handleBack}>
           <Icon
             icon="material-symbols:arrow-left-alt-rounded"
             className="w-12 h-12 text-gray-600"
@@ -24,20 +85,15 @@ const DetailTempat = () => {
         <div className="flex items-center space-x-6">
           <p className="font-semibold">Kategori</p>
           <div className="inline-block h-[60px] w-0.5 self-stretch bg-gray-300"></div>
-          <div className="flex flex-col items-center">
-            <Icon
-              icon="hugeicons:vintage-clock"
-              className="w-10 h-10 text-green-800"
-            />
-            <p className="font-medium text-green-800">Vintage</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <Icon
-              icon="solar:box-minimalistic-broken"
-              className="w-10 h-10 text-green-800"
-            />
-            <p className="font-medium text-green-800">Minimalist</p>
-          </div>
+          {tempat.kategori?.map((kategori: any, index: number) => (
+            <div key={index} className="flex flex-col items-center">
+              <Icon
+                icon={kategori.icon}
+                className="w-10 h-10 text-green-800"
+              />
+              <p className="font-medium text-green-800">{kategori.nama}</p>
+            </div>
+          ))}
         </div>
         <div className="flex items-center gap-4">
           <Button
@@ -53,50 +109,51 @@ const DetailTempat = () => {
       <div className="grid grid-cols-12 gap-4">
         {/* Gambar besar */}
         <div className="col-span-6">
-          <img
-            src="https://placehold.co/600x300"
-            alt="Gambar Besar"
-            className="w-full h-full object-cover rounded-l-lg"
-          />
+          <div className="aspect-video w-full overflow-hidden rounded-l-lg">
+            <img
+              src={tempat.foto?.[0] || "https://placehold.co/600x300"}
+              alt={tempat.nama}
+              className="w-full h-full object-cover rounded-l-lg"
+            />
+          </div>
         </div>
 
         {/* Gambar kecil dan button */}
         <div className="col-span-6">
-          <div className="grid grid-cols-12 gap-4 ">
+          <div className="grid grid-cols-12 gap-4">
             <div className="col-span-6 space-y-4">
-              <div className="aspect-video w-full">
-                <img
-                  src="https://placehold.co/200x150"
-                  alt="Gambar Kecil 1"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="aspect-video">
-                <img
-                  src="https://placehold.co/200x150"
-                  alt="Gambar Kecil 1"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {tempat.foto?.slice(1, 3).map((foto: any, index: number) => (
+                <div key={index} className="aspect-video w-full">
+                  <img
+                    src={foto || "https://placehold.co/200x150"}
+                    alt={`Gambar ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
             <div className="col-span-6 space-y-4">
-              <div className="aspect-video">
-                <img
-                  src="https://placehold.co/200x150"
-                  alt="Gambar Kecil 1"
-                  className="w-full h-full object-cover rounded-tr-lg"
-                />
-              </div>
-              <div className="aspect-video relative">
-                <img
-                  src="https://placehold.co/200x150"
-                  alt="Gambar Kecil 4"
-                  className="w-full h-full object-cover rounded-br-lg"
-                />
-                <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md flex items-center text-sm font-medium">
-                  <span>Lihat Semuanya</span>
-                </button>
-              </div>
+              {tempat.foto?.slice(3, 5).map((foto: any, index: number) => (
+                <div key={index} className="aspect-video">
+                  <img
+                    src={foto || "https://placehold.co/200x150"}
+                    alt={`Gambar ${index + 3}`}
+                    className={`w-full h-full object-cover ${index === 0 ? 'rounded-tr-lg' : 'rounded-br-lg'}`}
+                  />
+                </div>
+              ))}
+              {tempat.foto?.length > 5 && (
+                <div className="aspect-video relative">
+                  <img
+                    src={tempat.foto[4] || "https://placehold.co/200x150"}
+                    alt="Gambar 5"
+                    className="w-full h-full object-cover rounded-br-lg"
+                  />
+                  <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md flex items-center text-sm font-medium">
+                    <span>Lihat Semuanya</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -105,19 +162,15 @@ const DetailTempat = () => {
       {/*Nama tempat, deskripsi, dan lokasi*/}
       <div>
         <h1 className="text-green-800 text-3xl font-bold mb-3 mt-4">
-          Starbucks Sumarecon Mall Bekasi
+          {tempat.nama}
         </h1>
         <p className="text-gray-600 mb-4">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          Necessitatibus modi aut consectetur dicta laboriosam, blanditiis quia
-          eum distinctio sequi pariatur odit vitae perferendis obcaecati fuga
-          explicabo minima debitis? Provident, nostrum!
+          {tempat.deskripsi}
         </p>
         <div className="flex items-center gap-2">
           <Icon icon="line-md:map-marker" className="w-5 h-5 text-primary" />
           <span className="text-gray-700">
-            Sumarecon Mal Bks, Jl. Bulevar Ahmad Yani, RT.006/RW.002, Marga
-            Mulya, Kec. Bekasi Utara, Kota Bks, Jawa Barat 17142
+            {tempat.alamat}
           </span>
         </div>
       </div>
@@ -125,68 +178,28 @@ const DetailTempat = () => {
       <div className="grid grid-cols-2 mt-4">
         <div className="cols-span-6">
           <p className="font-bold mb-2">Fasilitas</p>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:wifi" className="w-5 h-5 text-primary" />
-            <span>Wifi</span>
-          </div>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:toilet" className="w-5 h-5 text-primary" />
-            <span>Toilet</span>
-          </div>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:cigarette" className="w-5 h-5 text-primary" />
-            <span>Smoking Area</span>
-          </div>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:air-vent" className="w-5 h-5 text-primary" />
-            <span>Air Conditioner</span>
-          </div>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:mountain" className="w-5 h-5 text-primary" />
-            <span>Outdoor Area</span>
-          </div>
-          <div className="flex gap-2 mb-2">
-            <Icon icon="lucide:plug" className="w-5 h-5 text-primary" />
-            <span>Stop Kontak</span>
-          </div>
+          {tempat.fasilitas?.map((fasilitas: any, index: number) => (
+            <div key={index} className="flex gap-2 mb-2">
+              <Icon icon={fasilitas.icon} className="w-5 h-5 text-primary" />
+              <span>{fasilitas.nama}</span>
+            </div>
+          ))}
         </div>
         <div className="cols-span-6">
           <p className="font-bold mb-2">Jam Operasional</p>
           <div className="flex flex-col gap-2">
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Senin</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Selasa</p>
-              <p className="text-green-800 font-bold">Libur</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Rabu</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Kamis</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Jumat</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Sabtu</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
-
-            <div className="flex justify-start items-center w-full">
-              <p className="font-medium text-gray-400 w-24">Minggu</p>
-              <p className="text-green-800 font-bold">10.00 - 22.00</p>
-            </div>
+            {tempat.jam_operasional?.map((jam: any, index: number) => (
+              <div key={index} className="flex justify-start items-center w-full">
+                <p className="font-medium text-gray-400 w-24 capitalize">{jam.hari}</p>
+                {jam.libur ? (
+                  <p className="text-green-800 font-bold">Libur</p>
+                ) : (
+                  <p className="text-green-800 font-bold">
+                    {formatJamOperasional(jam.buka)} - {formatJamOperasional(jam.tutup)}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -201,8 +214,12 @@ const DetailTempat = () => {
               className="text-yellow-500 w-10 h-10"
             />
             <div className="flex items-baseline">
-              <p className="text-green-800 text-2xl font-bold mr-1">4.8</p>
-              <p className="text-sm text-muted-foreground">/5.0 (30 Reviews)</p>
+              <p className="text-green-800 text-2xl font-bold mr-1">
+                {tempat.rating_count?.toFixed(1) || '0.0'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                /5.0 ({tempat.rating_count_total || 0} Reviews)
+              </p>
             </div>
           </div>
         </div>
@@ -261,74 +278,43 @@ const DetailTempat = () => {
         </div>
 
         <div className="space-y-6">
-          <div className="">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary text-white">
-                    R
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="font-semibold">Rusdicius</h4>
-                  <p className="text-sm text-muted-foreground">
-                    2 minggu yang lalu
-                  </p>
+          {tempat.rating?.slice(0, 2).map((review: any, index: number) => (
+            <div key={index}>
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-primary text-white">
+                      {review.user.inisial_nama}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-semibold">{review.user.nama_lengkap}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {review.dibuat_pada || 'Baru saja'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Icon
+                    icon="ic:outline-star-purple500"
+                    className="text-yellow-500 w-6 h-6"
+                  />
+                  <span className="font-bold">{review.rating}.0</span>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Icon
-                  icon="ic:outline-star-purple500"
-                  className="text-yellow-500 w-6 h-6"
-                />
-                <span className="font-bold">4.0</span>
-              </div>
+              <p className="text-gray-600 text-sm">
+                {review.review}
+              </p>
             </div>
-            <p className="text-gray-600 text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Laboriosam necessitatibus, corporis suscipit, voluptas obcaecati
-              aperiam ipsum expedita accusamus iusto debitis autem non in!
-              Neque, fugit odit. Quia explicabo vero ab!
-            </p>
-          </div>
+          ))}
 
-          <div className="">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary text-white">
-                    KL
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="font-semibold">Kairul Leclerc</h4>
-                  <p className="text-sm text-muted-foreground">
-                    2 minggu yang lalu
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <Icon
-                  icon="ic:outline-star-purple500"
-                  className="text-yellow-500 w-6 h-6"
-                />
-                <span className="font-bold">4.0</span>
-              </div>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt
-              atque perspiciatis deleniti omnis animi autem nihil. Ab aspernatur
-              dolor commodi fuga. Eligendi repellat fugit dolorum. Fugiat
-              doloribus architecto expedita, placeat, delectus voluptas facilis
-              tenetur voluptatum a sint pariatur vel optio est similique, at
-              adipisci laboriosam ex nemo perferendis vitae magni?
-            </p>
+          {tempat.rating?.length > 2 && (
             <div className="mt-4">
               <Button variant="outline" className="rounded-2xl">
                 <p className="font-normal items-center">Show all reviews</p>
-            </Button>
+              </Button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

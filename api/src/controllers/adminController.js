@@ -31,14 +31,14 @@ const getManajemenUser = async (req, res) => {
     const users = await userService.getAllUsers();
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Berhasil mengambil data manajemen user",
       data: users,
     });
   } catch (error) {
     console.error("Gagal mengambil data manajemen user:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengambil data manajemen user",
     });
   }
@@ -46,17 +46,31 @@ const getManajemenUser = async (req, res) => {
 
 const getAllKategoriTempat = async (req, res) => {
   try {
-    const kategori = await kategoriTempatService.getAllKategoriTempat();
+    const cari = req.query.cari || null;
+    const sort = req.query.sort || "kategori_tempat_id.asc";
+    const limit = req.query.limit || 10;
+    const page = req.query.page || 1;
+    const { data, pagination } =
+      await kategoriTempatService.getAllKategoriTempat({
+        cari,
+        sort,
+        limit,
+        page,
+      });
 
-    res.status(200).json({
-      success: true,
-      message: "Berhasil mengambil data kategori tempat",
-      data: kategori,
-    });
+    res
+      .status(200)
+      .json(
+        formatPaginatedMessage(
+          "Berhasil mengambil data kategori tempat",
+          data,
+          pagination
+        )
+      );
   } catch (error) {
     console.error("Gagal mengambil kategori tempat:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengambil data kategori tempat",
     });
   }
@@ -64,29 +78,29 @@ const getAllKategoriTempat = async (req, res) => {
 
 const updateKategoriTempat = async (req, res) => {
   try {
-    const { kategori_tempat_id, nama } = req.body;
+    const { kategori_tempat_id, nama, icon } = req.body;
 
-    if (!kategori_tempat_id || !nama) {
+    if (!kategori_tempat_id || !nama || !icon) {
       return res.status(400).json({
-        success: false,
-        message: "Field 'kategori_tempat_id' dan 'nama' wajib diisi",
+        code: 500,
+        message: "Field 'kategori_tempat_id', 'nama', dan 'icon' wajib diisi",
       });
     }
 
     const updated = await kategoriTempatService.updateKategoriTempat(
       kategori_tempat_id,
-      { nama }
+      { nama, icon }
     );
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Kategori tempat berhasil diperbarui",
       data: updated,
     });
   } catch (error) {
     console.error("Gagal mengubah kategori tempat:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengubah kategori tempat",
     });
   }
@@ -98,7 +112,7 @@ const hapusKategoriTempat = async (req, res) => {
 
     if (!kategori_tempat_id) {
       return res.status(400).json({
-        success: false,
+        code: 500,
         message: "Field 'kategori_tempat_id' wajib diisi",
       });
     }
@@ -108,14 +122,14 @@ const hapusKategoriTempat = async (req, res) => {
     );
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Kategori tempat berhasil dihapus",
       data: deleted,
     });
   } catch (error) {
     console.error("Gagal menghapus kategori tempat:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal menghapus kategori tempat",
     });
   }
@@ -123,25 +137,35 @@ const hapusKategoriTempat = async (req, res) => {
 
 const tambahKategoriTempat = async (req, res) => {
   try {
-    const { nama } = req.body;
+    const { nama, icon } = req.body;
 
     if (!nama) {
       return res.status(400).json({
-        success: false,
+        code: 500,
         message: "Field 'nama' wajib diisi",
       });
     }
 
-    const result = await kategoriTempatService.tambahKategoriTempat({ nama });
+    if (!icon) {
+      return res.status(400).json({
+        code: 500,
+        message: "Field 'icon' wajib diisi",
+      });
+    }
+
+    const result = await kategoriTempatService.tambahKategoriTempat({
+      nama,
+      icon,
+    });
 
     res.status(201).json({
-      success: true,
+      code: 200,
       message: "Kategori tempat berhasil ditambahkan",
       data: result,
     });
   } catch (error) {
     res.status(400).json({
-      success: false,
+      code: 500,
       message: error.message || "Gagal menambahkan kategori tempat",
     });
   }
@@ -149,21 +173,33 @@ const tambahKategoriTempat = async (req, res) => {
 
 const getAllFasilitas = async (req, res) => {
   try {
-    const fasilitas = await fasilitasService.getAll();
-
-    res.status(200).json({
-      success: true,
-      message: "Berhasil mengambil data fasilitas",
-      data: fasilitas,
+    const cari = req.query.cari || null;
+    const sort = req.query.sort || "fasilitas_id.asc";
+    const limit = req.query.limit || 10;
+    const page = req.query.page || 1;
+    const { data, pagination } = await fasilitasService.getAllFasilitas({
+      cari,
+      sort,
+      limit,
+      page,
     });
+    res
+      .status(200)
+      .json(
+        formatPaginatedMessage(
+          "Berhasil mengambil data fasilitas",
+          data,
+          pagination
+        )
+      );
   } catch (error) {
     console.error("Gagal mengambil data fasilitas:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengambil data fasilitas",
     });
   }
-}
+};
 
 const updateFasilitas = async (req, res) => {
   try {
@@ -171,7 +207,7 @@ const updateFasilitas = async (req, res) => {
 
     if (!fasilitas_id || !nama) {
       return res.status(400).json({
-        success: false,
+        code: 500,
         message: "Field 'fasilitas_id' dan 'nama' wajib diisi",
       });
     }
@@ -179,14 +215,14 @@ const updateFasilitas = async (req, res) => {
     const updated = await fasilitasService.ubah(fasilitas_id, { nama });
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Fasilitas berhasil diperbarui",
       data: updated,
     });
   } catch (error) {
     console.error("Gagal mengubah fasilitas:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal mengubah fasilitas",
     });
   }
@@ -198,7 +234,7 @@ const hapusFasilitas = async (req, res) => {
 
     if (!fasilitas_id) {
       return res.status(400).json({
-        success: false,
+        code: 500,
         message: "Field 'fasilitas_id' wajib diisi",
       });
     }
@@ -206,14 +242,14 @@ const hapusFasilitas = async (req, res) => {
     const deleted = await fasilitasService.hapus(fasilitas_id);
 
     res.status(200).json({
-      success: true,
+      code: 200,
       message: "Fasilitas berhasil dihapus",
       data: deleted,
     });
   } catch (error) {
     console.error("Gagal menghapus fasilitas:", error.message);
     res.status(500).json({
-      success: false,
+      code: 500,
       message: "Gagal menghapus fasilitas",
     });
   }
@@ -221,25 +257,24 @@ const hapusFasilitas = async (req, res) => {
 
 const tambahFasilitas = async (req, res) => {
   try {
-    const { nama } = req.body;
+    const { nama, icon } = req.body;
 
-    if (!nama) {
+    if (!nama || !icon) {
       return res.status(400).json({
-        success: false,
-        message: "Field 'nama' wajib diisi",
+        code: 500,
+        message: "Field 'nama' dan 'icon' wajib diisi",
       });
     }
 
-    const result = await fasilitasService.tambah({ nama });
-
+    const result = await fasilitasService.tambah({ nama, icon });
     res.status(201).json({
-      success: true,
+      code: 200,
       message: "Fasilitas berhasil ditambahkan",
       data: result,
     });
   } catch (error) {
     res.status(400).json({
-      success: false,
+      code: 500,
       message: error.message || "Gagal menambahkan fasilitas",
     });
   }

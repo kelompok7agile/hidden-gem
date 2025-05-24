@@ -32,7 +32,7 @@ const getAllTempat = async (filters) => {
   const parsedLimit = parseInt(limit);
   const parsedOffset = parseInt(offset);
 
-  const offsetData = (parsedOffset) * parsedLimit;
+  const offsetData = parsedOffset * parsedLimit;
 
   const { data, total_data } = await tempatRepository.getAllTempat({
     nama,
@@ -49,7 +49,7 @@ const getAllTempat = async (filters) => {
       data: [],
       total_data,
       total_page,
-      halaman_sekarang: parsedOffset,
+      halaman_sekarang: parsedOffset + 1,
     };
   }
 
@@ -57,7 +57,7 @@ const getAllTempat = async (filters) => {
     data,
     total_data,
     total_page,
-    halaman_sekarang: parsedOffset,
+    halaman_sekarang: parsedOffset + 1,
   };
 };
 
@@ -85,10 +85,7 @@ const compareTempat = async (id1, id2) => {
     throw new Error("Salah satu tempat tidak ditemukan");
   }
 
-  return {
-    tempat_1: tempat1,
-    tempat_2: tempat2,
-  };
+  return [tempat1, tempat2];
 };
 
 const createTempat = async (body, files, user_id) => {
