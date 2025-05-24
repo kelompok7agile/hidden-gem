@@ -3,6 +3,7 @@ require("dotenv").config();
 const path = require("path");
 const fs = require("fs-extra");
 const { formatDateID } = require("../utils/formatDate");
+const { getInitials } = require("../utils/initialsNameUtils");
 
 const convertJamOperasional = (jamObj) => {
   if (!jamObj || typeof jamObj !== "object") return [];
@@ -298,6 +299,7 @@ const getTempatById = async (id) => {
         user_id: item.user_id,
         user_group_id: userMap[item.user_id]?.user_group_id,
         nama_lengkap: userMap[item.user_id]?.nama_lengkap,
+        inisial_nama: getInitials(userMap[item.user_id]?.nama_lengkap),
       },
       dibuat_pada: formatDateID(item.dibuat_pada, "full"),
     }));
