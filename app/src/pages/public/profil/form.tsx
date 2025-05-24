@@ -4,9 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import { getDetailProfil, patchDataProfil } from "@/api/profil";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import { getInitials } from "@/lib/utils";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function Form() {
-
+  const navigate = useNavigate();
+  const { login } = useAuthContext();
   const [form, setForm] = useState<{
     profil_picture: File | null;
     nama: string;
@@ -60,11 +65,30 @@ export default function Form() {
 
     if (userId !== null) {
       try {
-        const updated = await patchDataProfil(userId, formData);
-        console.log("Profile berhasil di-update:", updated);
-        window.history.back();   // kembali ke detail view
+        const updatedData = await patchDataProfil(userId, formData);
+        toast.success("Profil berhasil diperbarui");
+        // @ts-ignore
+        const updated = updatedData && updatedData.length > 0 ? updatedData[0] : updatedData;
+        const getUserFromStorage = localStorage.getItem('user');
+
+        if (getUserFromStorage) {
+          const user = JSON.parse(getUserFromStorage);
+          user.nama = updated.nama || user.nama || null;
+          user.email = updated.email || user.email || null;
+          user.no_telepon = updated.no_telepon || user.no_telepon || null;
+          user.profile_img = updated.profile_img || user.profile_img || null;
+          user.user_group_id = updated.user_group_id || user.user_group_id || null;
+          user.user_group = updated.user_group || user.user_group || { nama: "Pengguna" };
+          user.user_id = updated.user_id || user.user_id || null;
+          user.token = user.token || null;
+          user.short_name = getInitials(updated.nama);
+          login(user);
+
+        }
+        navigate('/app/profil');
       } catch (e) {
         console.error("Gagal update profil:", e);
+        toast.error("Gagal memperbarui profil");
       }
     }
   }
