@@ -1,6 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import * as api from '../api/tempat';
+import axios from "@/lib/axios";
 
+
+interface ApiResponse<T = any> {
+  message: string;
+  code: number;
+  data: T;
+}
 export interface JamOperasional {
     hari: string;
     buka: string | null;
@@ -111,3 +118,16 @@ export const useTempatById = (id: string) => {
         }
     });
 }
+
+export const useSendReviewRating = async (
+  payload: any
+) => {const response = await axios.post<ApiResponse>(
+    `/review`,
+    payload,
+  );
+  return {
+    status: response.data.code === 200,
+    message: response.data.message,
+    data: response.data.data,
+  };
+};

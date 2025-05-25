@@ -112,7 +112,7 @@ export default function Dashboard() {
                                         {place.nama}
                                     </p>
                                     <span className="text-yellow-500 font-bold">
-                                        {(Math.random() * 4 + 1).toFixed(1)}⭐
+                                        {place.rating_count}⭐
                                     </span>
                                 </div>
                                 <div className="text-gray-600 dark:text-gray-300 text-sm flex items-center justify-start gap-1 mt-1">

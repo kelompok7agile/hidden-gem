@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -9,18 +9,59 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { useTempatById } from "@/hooks/useTempat";
+import { useSendReviewRating, useTempatById } from "@/hooks/useTempat";
 import { useParams } from 'react-router-dom';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
+import { Rating } from "@smastrom/react-rating";
+import '@smastrom/react-rating/style.css';
+import { toast } from "sonner";
+import { useAuthContext } from "@/contexts/AuthContext";
+// ...existing code...
 
 const DetailTempat = () => {
   const params = useParams();
   const idTempat = params.id;
 
-  const { data, isLoading, isError } = useTempatById(
+  const { data, isLoading, isError, refetch } = useTempatById(
     idTempat as string
   );
+  const [penilaian, setPenilaian] = useState({
+    rating: 0,
+    review: "",
+  })
+  const { user} = useAuthContext();
+  const setReview = (key: string, value: any) => {
+    setPenilaian((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const sendReview = async () => {
+    try {
+      const response = await useSendReviewRating({
+        tempat_id: idTempat,
+        user_id: user?.user_id,
+        rating: penilaian.rating,
+        review: penilaian.review,
+      });
+
+      if (response.status) {
+        toast.success("Review berhasil dikirim");
+        refetch();
+        setPenilaian({ rating: 0, review: "" });
+      } else {
+        toast.error(response.message);
+      }
+
+    } catch (error) {
+      console.error("Error sending review:", error);
+      toast.error("Gagal mengirim review");
+    }
+  };
+
+
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1); // Kembali ke halaman sebelumnya
@@ -234,7 +275,7 @@ const DetailTempat = () => {
           </Button>
         </div>
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-8 items-center">
           <Avatar className="h-10 w-10 flex-shrink-0">
             <AvatarFallback className="bg-primary text-white">
               DS
@@ -244,33 +285,17 @@ const DetailTempat = () => {
           <div className="flex-1">
             <textarea
               placeholder="Write your comment here"
-              className="w-full resize-none"
+              className="w-full resize-none p-2 border"
+              value={penilaian.review}
+              onChange={(e) => setReview('review', e.target.value)}
             />
           </div>
-          <div className="flex space-x-2">
-            <Icon
-              icon="ic:outline-star-purple500"
-              className="text-yellow-500 w-8 h-8"
-            />
-            <Icon
-              icon="ic:outline-star-purple500"
-              className="text-yellow-500 w-8 h-8"
-            />
-            <Icon
-              icon="ic:outline-star-purple500"
-              className="text-yellow-500 w-8 h-8"
-            />
-            <Icon
-              icon="ic:outline-star-purple500"
-              className="text-yellow-500 w-8 h-8"
-            />
-            <Icon
-              icon="ic:outline-star-border"
-              className="text-yellow-500 w-8 h-8"
-            />
+          <div className="flex space-x-2 items-center">
+            <Rating value={penilaian.rating} onChange={(value: any) => setReview('rating', value)} radius={'small'} className="w-[150px]" />
             <Button
               variant="default"
               className="flex items-center gap-2 rounded-2xl"
+              onClick={sendReview}
             >
               <span>Send</span>
             </Button>
@@ -278,7 +303,7 @@ const DetailTempat = () => {
         </div>
 
         <div className="space-y-6">
-          {tempat.rating?.slice(0, 2).map((review: any, index: number) => (
+          {tempat.rating?.map((review: any, index: number) => (
             <div key={index}>
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
@@ -308,13 +333,13 @@ const DetailTempat = () => {
             </div>
           ))}
 
-          {tempat.rating?.length > 2 && (
+          {/* {tempat.rating?.length > 2 && (
             <div className="mt-4">
               <Button variant="outline" className="rounded-2xl">
                 <p className="font-normal items-center">Show all reviews</p>
               </Button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
