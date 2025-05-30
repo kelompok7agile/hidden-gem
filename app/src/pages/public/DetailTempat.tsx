@@ -9,7 +9,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { useSendReviewRating, useTempatById } from "@/hooks/useTempat";
+import { useSendReviewRating, useTempat, useTempatById } from "@/hooks/useTempat";
 import { useParams } from 'react-router-dom';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
@@ -17,11 +17,21 @@ import { Rating } from "@smastrom/react-rating";
 import '@smastrom/react-rating/style.css';
 import { toast } from "sonner";
 import { useAuthContext } from "@/contexts/AuthContext";
-// ...existing code...
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const DetailTempat = () => {
   const params = useParams();
   const idTempat = params.id;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTempat, setSelectedTempat] = useState<any>(null);
+  
+  const {data: tempatData} = useTempat({
+    pageParam: 1,
+    nama: searchQuery,
+  });
+  const bunchOfTempat = tempatData?.pages.flatMap((page) => page.data.data) || [];
 
   const { data, isLoading, isError, refetch } = useTempatById(
     idTempat as string
@@ -137,13 +147,162 @@ const DetailTempat = () => {
           ))}
         </div>
         <div className="flex items-center gap-4">
-          <Button
-            variant="default"
-            className="flex items-center gap-2 rounded-xl"
-          >
-            <Icon icon="lucide:scale" className="w-5 h-5" />
-            Compare
-          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button
+                variant="default"
+                className="flex items-center gap-2 rounded-xl"
+              >
+                <Icon icon="lucide:scale" className="w-5 h-5" />
+                Compare
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl w-full">
+              <DialogHeader>
+                <DialogTitle>Compare Tempat</DialogTitle>
+                <DialogDescription>
+                  <div className="flex flex-col items-center my-4">
+                    <div className="flex items-center justify-center gap-2 w-64">
+                      <Input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Cari Nama Tempat..."
+                        className="rounded-full h-10"
+                        trailing={
+                          <Button variant="destructive" className="bg-primary rounded-full dark:bg-primary-foreground w-[32px] h-[32px] hover:bg-primary" size="icon" >
+                            <Icon icon="mdi:magnify" className="dark:text-white" width="20" />
+                          </Button>
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-3">
+                      <img
+                        src={tempat.foto?.[0] || "https://placehold.co/200x150"}
+                        alt={tempat.nama}
+                        className="w-full h-[200px] object-cover rounded-lg "
+                      />
+                      <div className="text-2xl text-primary font-semibold text-left">{tempat.nama}</div>
+                      <div className="flex items-start gap-2">
+                        <Icon icon="line-md:map-marker" className="w-16 h-16 text-primary" />
+                        <span className="text-gray-700">
+                          {tempat.alamat}
+                        </span>
+                      </div>
+                      <div className="">
+                        <p className="font-bold mb-2">Fasilitas</p>
+                        {tempat.fasilitas?.map((fasilitas: any, index: number) => (
+                          <div key={index} className="flex gap-2 mb-2">
+                            <Icon icon={fasilitas.icon} className="w-5 h-5 text-primary" />
+                            <span>{fasilitas.nama}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="">
+                        <h2 className="text-lg font-bold">Rating & Review</h2>
+                        <div className="flex items-center gap-2">
+                          <Icon
+                            icon="ic:outline-star-purple500"
+                            className="text-yellow-500 w-10 h-10"
+                          />
+                          <div className="flex items-baseline">
+                            <p className="text-green-800 text-2xl font-bold mr-1">
+                              {tempat.rating_count?.toFixed(1) || '0.0'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              /5.0
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {
+                      selectedTempat ? (
+                        <div className="border-l pl-4">
+                          <div className="flex flex-col gap-3">
+                            <img
+                              src={selectedTempat?.thumbnail || "https://placehold.co/200x150"}
+                              alt={selectedTempat?.nama}
+                              className="w-full h-[200px] object-cover rounded-lg "
+                            />
+                            <div className="text-2xl text-primary font-semibold text-left">{selectedTempat?.nama}</div>
+                            <div className="flex items-start gap-2">
+                              <Icon icon="line-md:map-marker" className="w-8 h-8 text-primary" />
+                              <span className="text-gray-700">
+                                {selectedTempat?.alamat}
+                              </span>
+                            </div>
+                            <div className="">
+                              <p className="font-bold mb-2">Fasilitas</p>
+                              {selectedTempat?.fasilitas?.map((fasilitas: any, index: number) => (
+                                <div key={index} className="flex gap-2 mb-2">
+                                  <Icon icon={fasilitas.icon} className="w-5 h-5 text-primary" />
+                                  <span>{fasilitas.nama}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="">
+                              <h2 className="text-lg font-bold">Rating & Review</h2>
+                              <div className="flex items-center gap-2">
+                                <Icon
+                                  icon="ic:outline-star-purple500"
+                                  className="text-yellow-500 w-10 h-10"
+                                />
+                                <div className="flex items-baseline">
+                                  <p className="text-green-800 text-2xl font-bold mr-1">
+                                    {selectedTempat?.rating_count?.toFixed(1) || '0.0'}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    /5.0
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-3">
+                            <Button
+                              variant="outline"
+                              className="mb-4"
+                              onClick={() => setSelectedTempat(null)}
+                            >
+                              Clear Selection
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-gray-500 text-sm">
+                            Pilih tempat untuk membandingkan
+                          </div>
+                          <div className=" max-h-[70vh] !overflow-y-auto">
+                            {bunchOfTempat.map((tempat: any, index: number) => (
+                              <div className="flex items-center gap-2 p-2 cursor-pointer" key={index} onClick={() => {
+                                setSelectedTempat(tempat);
+                              }}>
+                                <img
+                                  src={tempat.thumbnail || "https://placehold.co/50x50"}
+                                  alt={tempat.nama}
+                                  className="w-10 h-10 !object-cover rounded-full"
+                                />
+                                <div>
+                                  <div className="text-sm">{tempat.nama}</div>
+                                  <div className="text-yellow-500 font-bold">
+                                    {tempat.rating_count}⭐
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    }
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

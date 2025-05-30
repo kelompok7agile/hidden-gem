@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "@/components/icons";
@@ -30,6 +30,7 @@ import axios from "axios";
 import { useAuthContext } from '../../contexts/AuthContext';
 import { log } from "console";
 import { D } from "@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o";
+import { useTempat } from "@/hooks/useTempat";
 
 
 interface Fasilitas {
@@ -40,12 +41,51 @@ interface Fasilitas {
 export function Header() {
     const { user, logout } = useAuthContext();
     const [open, setOpen] = useState(false)
+    const navigate = useNavigate();
     const location = useLocation();
+    
+    const [searchQuery, setSearchQuery] = useState(() => {
+      const params = new URLSearchParams(location.search);
+      return params.get("query") || "";
+    });
 
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
+    const handleFilter = () => {
+        const params = new URLSearchParams(location.search);
+        if (searchQuery) {
+            params.set("cari", searchQuery);
+        } else {
+            params.delete("cari");
+        }
+
+        if (selectedValues.length > 0) {
+            params.set("fasilitas", JSON.stringify(selectedValues));
+        } else {
+            params.delete("fasilitas");
+        }
+        navigate({
+            pathname: location.pathname,
+            search: params.toString(),
+        });
+    }
+
+    useEffect(() => {
+      if (searchQuery.length === 0) {
+        handleFilter();
+      }
+    }, [searchQuery]);
+    const [selectedValues, setSelectedValues] = useState<string[]>(
+        () => {
+            const params = new URLSearchParams(location.search);
+            const fasilitasParam = params.get("fasilitas");
+            return fasilitasParam ? JSON.parse(fasilitasParam) : [];
+        }
+    );
     const [options, setOptions] = useState<Fasilitas[]>([])
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
+    
+    useEffect(() => {
+      console.log(selectedValues, 'selected values');
+    }, [selectedValues]);
     const fetchOptions = async () => {
         try {
             const response = await axios.get('/dummy/fasilitas.json');
@@ -84,14 +124,31 @@ export function Header() {
                             type="text"
                             placeholder="Cari Nama Tempat..."
                             className="rounded-full h-10"
+                            value={searchQuery}
+                            onChange={(e) => {
+                              setSearchQuery(e.target.value)
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleFilter();
+                                }
+                            }}
                             trailing={
-                                <Button variant="destructive" className="bg-primary rounded-full dark:bg-primary-foreground w-[32px] h-[32px] hover:bg-primary" size="icon">
+                                <Button 
+                                  variant="destructive" 
+                                  className="bg-primary rounded-full dark:bg-primary-foreground w-[32px] h-[32px] hover:bg-primary" 
+                                  size="icon"
+                                  onClick={() => {
+                                    handleFilter();
+                                  }}
+                                >
+
                                     <Icon icon="mdi:magnify" className="dark:text-white" width="20" />
                                 </Button>
                             }
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <Popover>
                             <PopoverTrigger>  <Button variant="destructive" className="bg-primary dark:bg-primary-foreground rounded-full w-[30px] h-[30px] hover:bg-primary" size="icon">
                                 <Icon icon="mdi:filter" className="dark:text-white" width="20" />
@@ -108,17 +165,34 @@ export function Header() {
                                         placeholder="Pilih Fasilitas"
                                     />
                                     <div className="flex justify-between mt-2 gap-2">
-                                        <Button variant="destructive" className="bg-white ring-1 ring-primary dark:bg-primary-foreground rounded-full w-full h-[30px] hover:bg-white mt-2 text-primary" size="icon">
+                                        <Button 
+                                          variant="destructive" 
+                                          className="bg-white ring-1 ring-primary dark:bg-primary-foreground rounded-full w-full h-[30px] hover:bg-white mt-2 text-primary" 
+                                          size="icon"
+                                          onClick={() => {
+                                            setSelectedValues([]); // Reset selected values
+                                            handleFilter(); // Apply filter with reset values
+                                            
+                                          }}
+                                        >
                                             Reset
                                         </Button>
-                                        <Button variant="destructive" className="bg-primary rounded-full w-full dark:bg-primary-foreground h-[30px] hover:bg-primary mt-2" size="icon">
+                                        <Button 
+                                          variant="destructive" 
+                                          className="bg-primary rounded-full w-full dark:bg-primary-foreground h-[30px] hover:bg-primary mt-2" 
+                                          size="icon"
+                                          onClick={() => {
+                                            handleFilter();
+                                            setOpen(false); // Close the popover after applying filter
+                                          }}
+                                        >
                                             Cari
                                         </Button>
                                     </div>
                                 </div>
                             </PopoverContent>
                         </Popover>
-                    </div>
+                    </div> */}
                     <nav className=" items-center space-x-2 hidden md:flex">
                         {user ? (
                             <DropdownMenu>

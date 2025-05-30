@@ -71,10 +71,10 @@ export interface ApiGetTempatByIdResponse {
     // total_halaman?: number;
 }
 
-export const useTempat = () =>
+export const useTempat = (payload: any) =>
     useInfiniteQuery({
-        queryKey: ['tempat'],
-        queryFn: api.getTempat,
+        queryKey: ['tempat', payload.nama, payload.fasilitas],
+        queryFn: ({ pageParam = 1 }) => api.getTempat({ pageParam, nama: payload.nama }),
         initialPageParam: 1,
         getNextPageParam: (lastPage) => {
             const current = lastPage.data.halaman_sekarang;
@@ -118,6 +118,7 @@ export const useTempatById = (id: string) => {
         }
     });
 }
+
 
 export const useSendReviewRating = async (
   payload: any

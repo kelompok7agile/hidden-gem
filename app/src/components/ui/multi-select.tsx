@@ -66,6 +66,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   <Checkbox
                     checked={selectedValues.includes(option.value)} 
                     onChange={() => toggleSelection(option.value)} 
+                    onClick={() => toggleSelection(option.value)}
                     id={option.value}
                   />
                   <label htmlFor={option.value} className="text-sm">
