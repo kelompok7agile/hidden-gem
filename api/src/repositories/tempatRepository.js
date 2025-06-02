@@ -128,7 +128,7 @@ const getAllTempat = async ({
 
   const { data: fasilitasData } = await supabase
     .from("fasilitas")
-    .select("fasilitas_id, nama")
+    .select("*")
     .in("fasilitas_id", allFasilitasIds);
 
   const kategoriMap = {};
@@ -137,9 +137,9 @@ const getAllTempat = async ({
   );
 
   const fasilitasMap = {};
-  fasilitasData?.forEach(
-    (item) => (fasilitasMap[item.fasilitas_id] = item.nama)
-  );
+  fasilitasData?.forEach((item) => {
+    fasilitasMap[item.fasilitas_id] = item;
+  });
 
   const tempatDenganDetail = tempatList.map((tempat) => {
     const ratings = ratingByTempat[tempat.tempat_id] || [];

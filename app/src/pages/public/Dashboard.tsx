@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import axios from "axios";
 import { useTempat } from "@/hooks/useTempat";
@@ -23,9 +23,15 @@ interface Category {
 }
 
 export default function Dashboard() {
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useTempat();
-    const navigate = useNavigate();
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
 
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useTempat({
+        pageParam: 1,
+        nama: params.get("cari") || "",
+        fasilitas: params.get("fasilitas") || "[]"
+    });
+    const navigate = useNavigate();
     const [tabActive, setTabActive] = useState("semua");
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -112,7 +118,7 @@ export default function Dashboard() {
                                         {place.nama}
                                     </p>
                                     <span className="text-yellow-500 font-bold">
-                                        {(Math.random() * 4 + 1).toFixed(1)}⭐
+                                        {place.rating_count}⭐
                                     </span>
                                 </div>
                                 <div className="text-gray-600 dark:text-gray-300 text-sm flex items-center justify-start gap-1 mt-1">
@@ -130,7 +136,7 @@ export default function Dashboard() {
                                             key={index}
                                             className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md text-xs"
                                         >
-                                            {fasilitas}
+                                            {fasilitas.nama}
                                         </span>
                                     ))}
                                 </div>

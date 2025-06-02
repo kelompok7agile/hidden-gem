@@ -1,8 +1,8 @@
 import axios from '../lib/axios';
 const modul = 'tempat';
 
-export const getTempat = async ({ pageParam = 1 }) => {
-    const res = await axios.get(`/${modul}?page=${pageParam}`);
+export const getTempat = async ({ pageParam = 1, nama = '', fasilitas = '' }) => {
+    const res = await axios.get(`/${modul}?page=${pageParam}&nama=${nama}&fasilitas=${fasilitas}`);
     return res.data;
 };
 

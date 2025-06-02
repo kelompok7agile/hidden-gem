@@ -12,7 +12,8 @@ const LoginPage = () => {
   const { mutate: login, isPending } = useLogin();
   const { user } = useAuthContext();
 
-  const [form, setForm] = useState({ email: 'fajar.hidayat@gmail.com', password: 'admin123' });
+  // const [form, setForm] = useState({ email: 'fajar.hidayat@gmail.com', password: 'admin123' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
