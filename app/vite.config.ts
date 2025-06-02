@@ -8,13 +8,18 @@ export default defineConfig(({ command }) => {
   const isProd = command === "build";
 
   return {
-    base: isProd ? basenameProd : "/",
+    base:  "/",
     plugins: [react()],
     server: {
       port: 3000,
       watch: {
         usePolling: true,
       },
+      historyApiFallback: true,
+    },
+    preview: {
+      port: 3000,
+      historyApiFallback: true,
     },
     resolve: {
       alias: {
@@ -30,6 +35,11 @@ export default defineConfig(({ command }) => {
     build: {
       commonjsOptions: {
         transformMixedEsModules: true,
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+        },
       },
     },
     esbuild: {
