@@ -11,14 +11,10 @@ export default defineConfig(({ command }) => {
     base:  "/",
     plugins: [react()],
     server: {
-      port: 4173,
+      port: 3000,
       watch: {
         usePolling: true,
       },
-      historyApiFallback: true,
-    },
-    preview: {
-      port: 4173,
       historyApiFallback: true,
     },
     resolve: {
