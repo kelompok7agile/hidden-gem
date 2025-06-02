@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => {
     base: isProd ? basenameProd : "/",
     plugins: [react()],
     server: {
-      port: 4173,
+      port: 3000,
       watch: {
         usePolling: true,
       },
